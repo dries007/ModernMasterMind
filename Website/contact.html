@@ -1,0 +1,99 @@
+<!--
+    The MIT License (MIT)
+
+    Copyright (c) 2015 Dries007
+
+    Made for/in relation to an education at Thomas More Mechelen-Antwerpen vzw
+    Campus De Nayer - Professionele bachelor elektronica-ict
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+ -->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <!-- Meta -->
+    <meta charset="UTF-8">
+    <meta lang="nl">
+    <meta name="author" content="Dries007">
+    <meta name="copyright" content="&copy; 2015 - Dries007.net">
+    <meta name="google" content="notranslate"/>
+
+    <!-- Styles -->
+    <link rel="stylesheet" type="text/css" href="assets/css/reset.css">
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans:700,400,300">
+    <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/css3.css">
+
+    <!-- JS -->
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.js"></script>
+    <script type="text/javascript" src="assets/js/js.js"></script>
+    <title>Dries Kennes</title>
+
+    <script type="text/javascript">
+        $(function ()
+        {
+            new Form("contact", "sillyQuestion");
+        });
+    </script>
+</head>
+<body>
+<div id="container">
+    <header>
+        <a href="home2.html"><img src="assets/img/logo.png"/></a>
+        <h1>ModernMasterMind</h1>
+        <h2>De klassieker in een modern jasje</h2>
+        <ul></ul>
+    </header>
+    <div id="content" class="page">
+        <p>Vragen of opmerkingen?</p>
+        <form class="contact" id="contact" action="mailto:admin@dries007.net?subject=Contact+Projectsite+1" enctype="text/plain">
+            <table>
+                <tr>
+                    <td><label for="name">Naam: </label></td>
+                    <td class="expand"><input class="input" type="text" id="name" name="name" autofocus/></td>
+                </tr>
+                <tr>
+                    <td><label for="email">Email: </label></td>
+                    <td class="expand"><input class="input" type="email" id="email" name="email"/></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td class="expand">
+                        <textarea class="input" rows=10 id="text" name="text"></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="sillyQuestion"></label></td>
+                    <td class="expand"><input class="input" type="number" id="sillyQuestion" name="sillyQuestion"/></td>
+                </tr>
+            </table>
+            <input class="btn" type="submit" value="Verzenden">
+            <input class="btn" type="reset" value="Reset">
+        </form>
+    </div>
+    <footer>
+        <p>&copy;&nbsp;2015&nbsp;-
+            <a href="http://dries007.net">Dries007.net</a>&nbsp;-
+            <a href="http://thomasmore.be">Thomas&nbsp;More&nbsp;Mechelen-Antwerpen&nbsp;vzw</a>&nbsp;-
+            Campus&nbsp;De&nbsp;Nayer&nbsp;- Professionele&nbsp;bachelor&nbsp;elektronica-ict
+        </p>
+    </footer>
+</div>
+</body>
+</html>

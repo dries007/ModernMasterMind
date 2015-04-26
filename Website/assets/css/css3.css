@@ -1,0 +1,474 @@
+/**
+    The MIT License (MIT)
+
+    Copyright (c) 2015 Dries007
+
+    Made for/in relation to an education at Thomas More Mechelen-Antwerpen vzw
+    Campus De Nayer - Professionele bachelor elektronica-ict
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
+
+/* Global style elements
+   ===================== */
+
+body, input, textarea
+{
+    font-family: 'Open Sans', sans-serif;
+    font-size: 100%;
+}
+
+textarea
+{
+    resize: vertical;
+}
+
+p
+{
+    padding-bottom: 1em;
+}
+
+h1, h2, h3
+{
+    padding-bottom: 14px;
+}
+
+h1
+{
+    font-size: 2em;
+}
+
+h2
+{
+    font-size: 1.7em;
+}
+
+h3
+{
+    font-size: 1.5em;
+}
+
+img.small
+{
+    max-height: 100px;
+    max-width: 100px;
+    border-radius: 4px;
+    box-shadow: 0 0 4px #808080;
+}
+
+.fl-left
+{
+    float: left;
+    margin-right: 12px;
+}
+
+.fl-right
+{
+    float: right;
+    margin-left: 12px;
+}
+
+.img-container
+{
+    display: block;
+}
+
+.img-container label
+{
+    color: lightgray;
+    text-align: center;
+    width: 100%;
+    display: block;
+}
+
+.img-container img
+{
+    display: block;
+    margin: 0 auto;
+}
+
+.btn
+{
+    border-radius: 6px;
+    padding: .4em .6em;
+    margin-right: 10px;
+    color: #333;
+    background-color: #fff;
+    border: 1px solid #cccccc;
+    cursor: pointer;
+}
+
+.hideOverflow
+{
+    overflow: hidden;
+}
+
+/* Structure parts
+   --------------- */
+
+#container
+{
+    margin: 0 auto;
+    width: 1000px;
+    height: 100vh;
+    background-image: url("../img/fp_bg.jpg");
+}
+
+header
+{
+    text-align: center;
+    display: block;
+    width: 100%;
+    min-height: 120px;
+}
+
+#content
+{
+    display: block;
+    width: 100%;
+    position: relative;
+}
+
+#content.page
+{
+    background-color: #ffffff;
+    box-shadow: 0 0 4px #a2a2a2;
+    box-sizing: border-box;
+    padding: 40px 40px 20px 40px;
+    overflow-x: visible;
+    overflow-y: auto;
+    line-height: 1.2em;
+}
+
+footer
+{
+    display: block;
+    font-weight: 300;
+    padding-top: 5px;
+    font-size: small;
+    text-align: center;
+}
+
+footer *
+{
+    padding-bottom: 0;
+}
+
+/* Header elements
+   --------------- */
+
+header img
+{
+    float: left;
+    width: 100px;
+    height: 100px;
+    margin: 10px;
+}
+
+header h1
+{
+	text-shadow: 2px 2px #eeeeee, 2px -2px #eeeeee, -2px 2px #eeeeee, -2px -2px #eeeeee;
+    font-size: 64px;
+    font-weight: bold;
+    padding-bottom: 0;
+}
+
+header h2
+{
+	text-shadow: 2px 2px #eeeeee, 2px -2px #eeeeee, -2px 2px #eeeeee, -2px -2px #eeeeee;
+    font-size: 30px;
+    font-weight: bold;
+    padding-bottom: 10px;
+}
+
+header ul
+{
+    padding-top: 10px;
+    padding-bottom: 5px;
+}
+
+header li
+{
+    position: relative;
+    display: inline;
+    background: #ffffff;
+    padding: 5px 20px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    color: #000000;
+    box-shadow: 0 -2px 1px rgba(162, 162, 162, 0.5), -2px -2px 1px rgba(162, 162, 162, 0.5), 2px -2px 1px rgba(162, 162, 162, 0.5);
+    margin: 0 10px;
+}
+
+header li.active
+{
+    z-index: 1;
+}
+
+header li.inactive
+{
+    background-image: linear-gradient(to bottom, #ffffff, #dbdbdb);
+}
+
+/* Links
+   ----- */
+
+a:link
+{
+    color: inherit;
+    text-decoration: none;
+}
+
+a:visited
+{
+    color: inherit;
+    text-decoration: none;
+}
+
+a:hover
+{
+    color: inherit;
+    text-decoration: none;
+}
+
+a:active
+{
+    color: inherit;
+    text-decoration: none;
+}
+
+#content p a
+{
+    text-decoration: underline;
+}
+
+/* Contact form
+   ------------ */
+
+.contact table
+{
+    width: 100%;
+}
+
+.contact table td
+{
+    padding-bottom: 1em;
+}
+
+.contact table td:first-child
+{
+    width: 100px;
+}
+
+.contact label
+{
+    padding-right: 1em;
+}
+
+.contact .input
+{
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: .4em .6em;
+    transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.contact .input:focus
+{
+    outline: 0;
+    box-shadow: 0 0 8px rgba(82,168,236,.6);
+    border-color: rgba(82,168,236,.8);
+}
+
+.contact .input.verified
+{
+    border-color: #3c763d;
+}
+
+.contact .input.verified:focus
+{
+    box-shadow: 0 0 8px rgba(60, 118, 61, 0.64);
+}
+
+.contact .input.error
+{
+    border-color: #a94442;
+}
+
+.contact .input.error:focus
+{
+    box-shadow: 0 0 8px rgba(169, 68, 66, 0.64);
+}
+
+/* Notebook Style
+   -------------- */
+
+/*noinspection CssOptimizeSimilarProperties*/
+.notebook
+{
+    position: absolute;
+    width: 400px;
+    box-shadow: inset 0 0 25px rgba(176, 45, 45, 0.2), 0 0 5px 0 #a2a2a2;;
+    padding-left: 2.8em;
+    padding-right: 1.6em;
+    background-image: url("../img/notebook.jpg");
+    background-size: 80em 1em;
+    background-repeat: repeat;
+}
+
+.notebook h1
+{
+    font-size: 1.5em;
+    padding-bottom: 0.35em;
+    padding-top: 0.65em;
+}
+
+/* Phone Style
+   ----------- */
+
+.phone
+{
+    position: absolute;
+    border-radius: 5px;
+    background-color: #000000;
+    box-shadow: 0 0 5px 0 #a2a2a2;
+    height: 300px;
+    width: 600px;
+    border: 4px solid gray;
+}
+
+.phone .fa
+{
+    position: absolute;
+    top: 130px;
+    left: 470px;
+    color: rgba(255, 255, 255, 0.30);
+    text-shadow: 0 0 4px #000000;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.phone h1
+{
+    position: absolute;
+    top: 15px;
+    color: #ffffff;
+    text-shadow: 0 0 4px #000000;
+    width: 100%;
+    text-align: center;
+    font-size: 1.5em;
+}
+
+.phone .img-container
+{
+    position: absolute;
+    top: 10px;
+    left: 40px;
+    height: 280px;
+    width: 500px;
+    border-radius: 5px;
+    background: #202020;
+}
+
+.phone img
+{
+    display: block;
+    margin: auto;
+    max-height: 100%;
+    max-width: 100%;
+    border-radius: 2px;
+}
+
+/* Sheet Style
+   ----------- */
+
+.sheet
+{
+    position: absolute;
+    background-color: #ffffff;
+    width: 800px;
+    height: 500px;
+    padding: 50px 75px;
+    box-shadow: 0 0 5px 0 #a2a2a2;
+}
+
+.sheet p
+{
+    padding-bottom: .5em;
+}
+
+.sheet h1
+{
+    font-size: 1.5em;
+    padding-bottom: 0.5em;
+}
+
+.sheet img
+{
+    max-height: 75%;
+    max-width: 100%;
+    padding: 25px 0;
+}
+
+/* Index specific CSS
+   ================== */
+
+#index #container
+{
+    min-height: 900px;
+}
+
+/* Content elements
+   ---------------- */
+
+#index #slideshow1
+{
+    z-index: 2;
+    transform: rotate(-1deg);
+    padding: 2px;
+}
+
+#index #aboutme
+{
+    z-index: 3;
+    transform: rotate(1deg);
+    left: 500px;
+}
+
+#index #hardware
+{
+    z-index: 0;
+    top: 100px;
+    transform: rotate(-1deg);
+}
+
+#index #software
+{
+    z-index: 1;
+    top: 160px;
+    left: 40px;
+    transform: rotate(1deg);
+}
+
+/* Other pages
+   =========== */
+
+

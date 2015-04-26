@@ -9,6 +9,8 @@ This project was developed with the help of the RIOT board, made by MGM & [dp].
 
 This repository contains the source code and documentation for the 'Beck SC12' and 'AVR Atmega128A', as well as information about the dual port memory usage.
 
+Some parts of this repository are in Dutch.
+
 License
 -------
 This project's code is licensed under [the MIT License (MIT)](LICENSE).

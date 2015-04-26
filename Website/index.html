@@ -1,0 +1,110 @@
+<!--
+    The MIT License (MIT)
+
+    Copyright (c) 2015 Dries007
+
+    Made for/in relation to an education at Thomas More Mechelen-Antwerpen vzw
+    Campus De Nayer - Professionele bachelor elektronica-ict
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+ -->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <!-- Meta -->
+    <meta charset="UTF-8">
+    <meta lang="nl">
+    <meta name="author" content="Dries007">
+    <meta name="copyright" content="&copy; 2015 - Dries007.net">
+    <meta name="google" content="notranslate"/>
+
+    <!-- Styles -->
+    <link rel="stylesheet" type="text/css" href="assets/css/reset.css">
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans:700,400,300">
+    <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/css3.css">
+
+    <!-- JS -->
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.js"></script>
+    <script type="text/javascript" src="assets/js/js.js"></script>
+    <script type="text/javascript">
+        $(function ()
+        {
+            new Slideshow("slideshow1", ["Image 1", "Image 2", "Image 3"], ["http://placehold.it/400x600&text=Image+1", "http://placehold.it/700x500&text=Image+2", "http://placehold.it/700&text=Image+3"], 6000, 250);
+
+            var lastZIndex = 5; // Start with z-index >= 5
+
+            // On every child of '#content' that is a 'div', add an event handler for the 'click' event
+            $("#content").on("click", "div", function(e)
+            {
+                this.style.zIndex = lastZIndex++;
+            });
+        });
+    </script>
+
+    <title>Dries Kennes</title>
+</head>
+<body id="index">
+<div id="container">
+    <header>
+        <a href="home2.html"><img src="assets/img/logo.png"/></a>
+        <a href="home2.html"><h1>ModernMasterMind</h1></a>
+        <a href="home2.html"><h2>De klassieker in een modern jasje</h2></a>
+    </header>
+    <div id="content">
+        <div class="phone" id="slideshow1">
+            <div class="img-container">
+                <img src="http://placehold.it/600x400&text=Image+1">
+                <h1>Image 1</h1>
+                <i class="fa fa-pause"></i>
+            </div>
+        </div>
+        <div class="notebook" id="aboutme">
+            <h1>Hallo!</h1>
+            <p>Ik ben Dries Kennes, student ICT-Elektronika Fase 1 aan Thomas More Mechelen op Campus De Nayer.</p>
+            <p>Mijn voornaamste ingresses zijn elektronika en alles wat te enigsinds programeren valt. Dit is ook hoe ik in deze richting ben terecht gekomen.</p>
+            <p>In mijn (schaarse) vrije tijd ben ik een entousianste Java programmeur die vooral build-to-order Minecraft mods maakt.</p>
+            <p>Voor mijn eerste project heb ik een MasterMind clone gemaakt. De besturing gebeurt met je smartphone, en het spek kan gevolgd worden op een LED display.</p>
+            <p>Ps: Door op de achterliggende elementen te klikken kan u ze naar voor brengen.</p>
+        </div>
+        <div class="sheet" id="hardware">
+            <h1>Hardware</h1>
+            <p>De hardware van dit project is gebaseerd op de RIOT ontwikkelomgeving gemaakt door Mr.&nbsp;Roggemans en Mr.&nbsp;Pauwels.</p>
+            <img src="assets/img/hardware.png">
+            <p>De SC12 zorgt voor de webinterface, de µC (een AVR ATMega128) stuurt de LCD, keypad en LEDs aan.</p>
+            <p>Klik <a href="hardware.html">hier</a> voor meer details.</p>
+        </div>
+        <div class="sheet" id="software">
+            <h1>Software</h1>
+            <p>Dit blokschema is een voorstelling van de software in de SC12.</p>
+            <img src="assets/img/software.png">
+            <p>De software is ook voorzien op een '1-tegen-allen' modus.</p>
+            <p>Voor een schema van de software in de AVR en meer details kan u <a href="software.html">hier</a> klikken</p>
+        </div>
+    </div>
+    <footer>
+        <p>&copy;&nbsp;2015&nbsp;-
+            <a href="http://dries007.net">Dries007.net</a>&nbsp;-
+            <a href="http://thomasmore.be">Thomas&nbsp;More&nbsp;Mechelen-Antwerpen&nbsp;vzw</a>&nbsp;-
+            Campus&nbsp;De&nbsp;Nayer&nbsp;- Professionele&nbsp;bachelor&nbsp;elektronica-ict
+        </p>
+    </footer>
+</div>
+</body>
+</html>
