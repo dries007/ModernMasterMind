@@ -65,17 +65,19 @@
 #define RAM_INT_SEND	(RAM_OFFSET + 0x3FE)
 #define RAM_INT_GET		(RAM_OFFSET + 0x3FF)
 
-#define MAX_LEDS		(RAM_LEDS_END - RAM_LEDS_START)
-#define MAX_LCD_CHARS	(RAM_LCD_END - RAM_LCD_START)
+#define MAX_LEDS		((uint8_t)(RAM_LEDS_END - RAM_LEDS_START))
+#define MAX_LCD_CHARS	((uint8_t)(RAM_LCD_END - RAM_LCD_START))
 
 /* ================ CMD CODES =============== */
-#define CMD_LEDS_SEND	0x01
-#define CMD_LCD_CHAR	0x02
-#define CMD_LCD_CMD		0x03
-#define CMD_LCD_CL_PR	0x04
-#define CMD_LCD_POS		0x05
+#define CMD_LEDS_SEND	0x01	// Clock out LEDS
+#define CMD_LCD_CHAR	0x02	// Print char buffer to LCD
+#define CMD_LCD_CMD		0x03	// Send instruction byte to LCD
+#define CMD_LCD_CL_PR	0x04	// Send clear + print out char buffer to LCD
+#define CMD_LCD_POS		0x05	// Set LCD cursor to position
+#define CMD_LCD_BL_ON	0x06	// Set LCD_BACKLIGHT = 1 
+#define CMD_LCD_BL_OFF	0x07	// Set LCD_BACKLIGHT = 0
 
-#define SATUS_KP_PRESS	0x01
+#define SATUS_KP_PRESS	0x01	// Key was pressed
 
 /* ================= MACROS ================= */
 /*	
@@ -92,8 +94,8 @@
 struct cRGB { uint8_t g; uint8_t r; uint8_t b; };
 
 /* ================= GLOBALS ================ */
-struct cRGB LEDS[MAX_LEDS];
-uint8_t LCD_BACKLIGHT = 0;
+struct cRGB LEDS[MAX_LEDS]; // LED data, in correct byte order
+uint8_t LCD_BACKLIGHT = 0; // LCD back light pin status (pin 7)
 
 /* ================ FUNCTIONS =============== */
 
@@ -113,7 +115,7 @@ void inline inits();
 
 /* ---------------- readMatrix ----------------
  * Parameters:
- * -	matrix				Pin readout of the matrix port
+ * -	matrix				Pin readout of the matrix port (1 = active, invert when using pull-ups)
  * Actions:
  * -	Convert matrix code to ACSII
  * Matrix layout:
@@ -123,8 +125,9 @@ void inline inits();
  *		  2 | 4 | 5 | 6 | B 
  *		  3 | 7 | 8 | 9 | C 
  *		  4 | * | 0 | # | D 
+ * Pressing 2 buttons at once results in 0x00, same as no button pressed
  */
-uint8_t readMatrix(uint8_t matrix);
+uint8_t inline readMatrix(uint8_t matrix);
 
 /* ---------------- sendLEDS ----------------
  * Parameters:
@@ -172,7 +175,7 @@ void sendLCDInstructionByte(uint8_t data);
  *	-	Call sendLCDNible(data, 1)
  *	-	delay 50µs
  */
-void sendLCDCharacterByte(uint8_t data);
+void sendLCDCharacterByte(char data);
 
 /* ---------------- sendLCDBuffer ----------------
  * Parameters:
@@ -181,15 +184,74 @@ void sendLCDCharacterByte(uint8_t data);
  *	-	For every character in the buffer or until `MAX_LCD_CHARS` is reached:
  *		-	Call sendLCDCharacterByte(data)
  */
-void sendLCDBuffer(uint8_t * buffer);
+void sendLCDBuffer(char * buffer);
 
-/* ---------------- sendLCD ----------------
- * Parameters:
- *	-	option			0 = print; 1 = instruction; 2 = clear & print
- *  Actions:
- *	-	For every character in the buffer or until `MAX_LCD_CHARS` is reached:
- *		-	Call sendLCDCharacterByte(data)
+/* ########################################## START SECTION WS2812 DRIVER ########################################## 
+ * Original Source:		https://github.com/cpldcpu/light_ws2812/
+ * Original Author:		Tim (cpldcpu@gmail.com) 
+ * Original License:	GNU GPL V2 (https://github.com/cpldcpu/light_ws2812/blob/master/License.txt)
+ *		This license still applies to everything between the "WS2812 DRIVER" section lines.
+ *
+ * Modifications by Dries007:
+ *	-	Changed configuration
+ *	-	Merged library into single set of source and header files
  */
-void sendLCD(uint8_t buffer);
+// Timing in ns
+#define w_zeropulse   350
+#define w_onepulse    900
+#define w_totalperiod 1250
+
+// Fixed cycles used by the inner loop
+#define w_fixedlow    2
+#define w_fixedhigh   4
+#define w_fixedtotal  8   
+
+// Insert NOPs to match the timing, if possible
+#define w_zerocycles    (((F_CPU/1000)*w_zeropulse          )/1000000)
+#define w_onecycles     (((F_CPU/1000)*w_onepulse    +500000)/1000000)
+#define w_totalcycles   (((F_CPU/1000)*w_totalperiod +500000)/1000000)
+
+// w1 - nops between rising edge and falling edge - low
+#define w1 (w_zerocycles-w_fixedlow)
+// w2   nops between fe low and fe high
+#define w2 (w_onecycles-w_fixedhigh-w1)
+// w3   nops to complete loop
+#define w3 (w_totalcycles-w_fixedtotal-w1-w2)
+
+#if w1>0
+  #define w1_nops w1
+#else
+  #define w1_nops  0
+#endif
+
+// The only critical timing parameter is the minimum pulse length of the "0"
+// Warn or throw error if this timing can not be met with current F_CPU settings.
+#define w_lowtime ((w1_nops+w_fixedlow)*1000000)/(F_CPU/1000)
+#if w_lowtime>550
+   #error "WS2812 DRIVER: Sorry, the clock speed is too low. Did you set F_CPU correctly?"
+#elif w_lowtime>450
+   #warning "WS2812 DRIVER: The timing is critical and may only work on WS2812B, not on WS2812(S)."
+   #warning "Please consider a higher clockspeed, if possible"
+#endif   
+
+#if w2>0
+#define w2_nops w2
+#else
+#define w2_nops  0
+#endif
+
+#if w3>0
+#define w3_nops w3
+#else
+#define w3_nops  0
+#endif
+
+#define w_nop1  "nop      \n\t"
+#define w_nop2  "rjmp .+0 \n\t"
+#define w_nop4  w_nop2 w_nop2
+#define w_nop8  w_nop4 w_nop4
+#define w_nop16 w_nop8 w_nop8
+
+/* ########################################## END SECTION WS2812 DRIVER ########################################## */
 
 #endif /* AVR_H_ */
