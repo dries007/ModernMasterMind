@@ -45,7 +45,7 @@ ISR(INT4_vect)
 		case CMD_LEDS_SEND: // Copy LED data from DPRAM into RAM (sets correct byte order) and clock out the data
 		{
 			uint8_t n = READ_RAM(RAM_LEDS_AMOUNT); // Amount of LEDS connected
-			uint8_t dim = PORTD = READ_RAM(RAM_LEDS_DIM); // Global LED dimmer settings
+			uint8_t dim = READ_RAM(RAM_LEDS_DIM); // Global LED dimmer settings
 			if (n > MAX_LEDS) n = MAX_LEDS; // Make sure that n <= MAX_LEDS to prevent data corruption
 			uint16_t offset = 0; // used for DPRAM address offset from RAM_LEDS_START
 			for (uint16_t i = 0; i < n; i++)
@@ -83,6 +83,8 @@ ISR(INT4_vect)
 			}
 		}
 		break;
+		case CMD_LCD_BL_ON: LCD_BACKLIGHT = 1; break;
+		case CMD_LCD_BL_OFF: LCD_BACKLIGHT = 0; break;
 	}
 	/* Interrupt detection debug code */
 	#if DEBUG
@@ -252,14 +254,14 @@ void inline inits()
 	WRITE_RAM(RAM_VERSION_2, 0x42);
 	
 	// LCD Port Setup
-	LCD_DDR = LCD_MASK;
-	LCD_PORT = (uint8_t)~LCD_MASK;
+	LCD_DDR = 0xFF;
 	
 	// Keypad Port Setup (bit 0-3 = in; bit 4-7 = out)
 	KP_DDR = 0xF0;
 	
 	// LED port all output
-	LEDS_DDR = 0xFF;
+	LEDS_DDR = 0xEF;
+	LEDS_PORT = (uint8_t)~0xEF;
 	
 	// Enable falling edge interrupt INT4
 	EICRB = 0x02;
@@ -331,12 +333,12 @@ void inline sendLEDS(uint16_t leds)
 	uint16_t datlen = leds + leds + leds;	// 3 colors!
 	uint8_t * data = (uint8_t *) LEDS;		// Type cast
 	
-	uint8_t reg_prev = SREG;	// Save interrupt status
+	uint8_t sreg_prev = SREG;	// Save interrupt status
 	cli();						// We can't be interrupted!
 	
 	uint8_t maskhi = _BV(LEDS_PIN);
 	uint8_t masklo	= ~maskhi&LEDS_PORT;	// Low mask
-	uint8_t maskhi |=         LEDS_PORT;	// High mask
+	maskhi |=         LEDS_PORT;	// High mask
 	
 	uint8_t curbyte, ctr; // used in ASM
 	while (datlen--)
@@ -409,16 +411,16 @@ void inline sendLEDS(uint16_t leds)
 }
 /* ########################################## END SECTION WS2812 DRIVER ########################################## */
 
-void sendLCDNible(uint8_t data, uint8_t rs)
+void sendLCDNible(volatile uint8_t data, uint8_t rs)
 {
 						data &= 0b00001111;	// Mask out fist 4 bits
 	if (LCD_BACKLIGHT)	data |= 0b10000000;	// Mask in LCD_BACKLIGHT if required (pin 7)s
 	if (rs)				data |= 0b01000000;	// Mask in register select
 						data |= 0b00010000; // Bit 4 => 1, its the interrput pin, its on pull-up!
 	LCD_PORT = data;	// Set Data
-	_delay_us(10);		// Small delay, data needs to be valid BEFORE enable
-	LCD_PORT ^= 0b00100000; // Toggle enable
-	_delay_us(50);		// Larger delay, LCD needs time to process
+	_delay_us(800);		// Small delay, data needs to be valid BEFORE enable
+	LCD_PORT |= 0b00100000; // Toggle enable
+	_delay_us(800);		// Larger delay, LCD needs time to process
 }
 
 void sendLCDInstructionByte(uint8_t data)

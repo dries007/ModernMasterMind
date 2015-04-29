@@ -46,3 +46,14 @@ Pins          | Function
 28            | GPIO2 (A8)
 29            | GPIO3 (A9)
 30, 31        | I²C
+
+UART0 & UART1:
+
+Pins | Function
+-----|----------
+0    | GND
+1    | RTS
+2    | CTS
+3    | TX
+4    | RX
+6    | 5V

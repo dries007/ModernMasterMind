@@ -31,17 +31,16 @@
 
 /* =============== PORT CONFIG ============== */
 // Mask to eliminate INT4
-#define	LCD_PORT		PORTE
-#define	LCD_DDR			DDRE
-#define	LCD_MASK		0xEF
+#define	LCD_PORT		PORTB
+#define	LCD_DDR			DDRB
 // KP = Keypad
 #define	KP_PORT			PORTD
 #define	KP_DDR			DDRD
 #define	KP_PIN			PIND
 // WS2812
-#define LEDS_PORT		PORTB
-#define LEDS_DDR		DDRB
-#define LEDS_PIN		0
+#define LEDS_PORT		PORTE
+#define LEDS_DDR		DDRE
+#define LEDS_PIN		7
 
 /* ============== RAM ADDRESSES ============= */
 // Offset for External RAM
