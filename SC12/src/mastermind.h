@@ -1,8 +1,28 @@
 /*
- * mastermind.h
- *
- *  Created on: 24-apr.-2015
- *      Author: Dries007
+    The MIT License (MIT)
+
+    Copyright (c) 2015 Dries007
+
+    Made for/in relation to an education at Thomas More Mechelen-Antwerpen vzw
+    Campus De Nayer - Professionele bachelor elektronica-ict
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
  */
 
 #ifndef SRC_MASTERMIND_H_
@@ -80,6 +100,8 @@
 #define CMD_LCD_CMD     0x03
 #define CMD_LCD_CL_PR   0x04
 #define CMD_LCD_POS     0x05
+#define CMD_LCD_BL_ON   0x06
+#define CMD_LCD_BL_OFF  0x07
 
 #define SATUS_KP_PRESS  0x01
 
@@ -136,12 +158,13 @@ void setRndCode(byte colors);
 void guessRow(byte id);
 
 void enableDatabus(); // Enables databus
-void selectBank(byte bank); // sets PIO pins 2 and 3 to out & defaults them to the selected bank [0 .. 3]
 byte readDatabus(address addr); // read byte from databus
 void writeDatabus(address addr, byte value); // write byte to databus
-void initTime();
+//void initTime();
 
-void setLCDLine(byte line, const char *format, ...); // Clear line and print to LCD
+void clearLCD();
+void setLCDLine(byte line, const char *string);
+void setLCDLineFormat(byte line, const char *format, ...);
 
 void installCGIMethods();
 void removeCGIMethods();

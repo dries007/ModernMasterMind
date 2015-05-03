@@ -7,7 +7,8 @@ del /Q //network path//*.h
 del /Q //network path//*.c
 
 rem copy over new source files
-copy /B /Y *.* //network path//
+copy /B /Y *.c //network path//
+copy /B /Y *.h //network path//
 
 rem open ssh session and execute commands
 plink -batch -ssh //user@host// "cd sc12; sh compile.sh"

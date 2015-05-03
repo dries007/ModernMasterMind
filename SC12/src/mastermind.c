@@ -1,8 +1,28 @@
 /*
- * mastermind.c
- *
- *  Created on: 24-apr.-2015
- *      Author: Dries007
+    The MIT License (MIT)
+
+    Copyright (c) 2015 Dries007
+
+    Made for/in relation to an education at Thomas More Mechelen-Antwerpen vzw
+    Campus De Nayer - Professionele bachelor elektronica-ict
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
  */
 
 #include "mastermind.h"
@@ -177,194 +197,79 @@ void guessRow(byte id)
 
 void enableDatabus()
 {
-    pfe_enable_bus(0xFF, 1);
-    pfe_enable_pcs(1);
-    pfe_enable_pio(2, 5);
-    pfe_enable_pio(3, 5);
+    pfe_enable_bus(0xFF, 1);    // all 8 bits enabled with ALE
+    pfe_enable_pcs(1);          // Chip select 1 (PIO4)
+    pfe_enable_pio(2, 5);       // PIO2 = output, low
+    pfe_enable_pio(3, 5);       // PIO3 = output, low
 }
 
-/**
- * Shortcut function for hal_read_bus
- */
 byte readDatabus(address addr)
 {
     byte bank = addr >> 8;
-    pfe_enable_pio(2, bank & 0x01 ? 4 : 5);
-    pfe_enable_pio(3, bank & 0x02 ? 4 : 5);
-    return hal_read_bus((addr & 0x0FF) | 0x100, 0xFFFF, 0x0000);
-
-    //selectBank(BANK_FROM_ADDRESS(addr));
-    //byte value = hal_read_bus(NORMALIZE_ADDRESS(addr), 0xFFFF, 0x0000);
-//#if DEBUG
-    //printf("READ 0x%02x (%c) to 0x%04x @ %d (0x%04x)\n", value, value, NORMALIZE_ADDRESS(addr), BANK_FROM_ADDRESS(addr), addr);
-//#endif
-    //return value;
+    pfe_enable_pio(2, bank & 0x01 ? 4 : 5); // if bank is 1 or 3, set PIO2 high, otherwise set PIO2 low
+    pfe_enable_pio(3, bank & 0x02 ? 4 : 5); // if bank is 3 or 4, set PIO3 high, otherwise set PIO3 low
+    return hal_read_bus((addr & 0x0FF) | 0x100, 0xFFFF, 0x0000); // Read data bus on corrected address (always in 0x100..0x1FF range)
 }
 
 void writeDatabus(address addr, byte val)
 {
     byte bank = addr >> 8;
-    //printf("\nWriting 0x%02x to 0x%04x (Bank %d, Real address 0x%04x)\n", val, addr, bank, (addr & 0x0FF) | 0x100);
-    pfe_enable_pio(2, bank & 0x01 ? 4 : 5);
-    pfe_enable_pio(3, bank & 0x02 ? 4 : 5);
-    hal_write_bus((addr & 0x0FF) | 0x100, val, 0xFFFF, 0x0000);
-
-//    selectBank(BANK_FROM_ADDRESS(addr));
-//    hal_write_bus(NORMALIZE_ADDRESS(addr), value, 0xFFFF, 0x0000);
-//#if DEBUG
-//    printf("WRITE 0x%02x (%c) to 0x%04x @ %d (0x%04x)\n", value, value, NORMALIZE_ADDRESS(addr), BANK_FROM_ADDRESS(addr), addr);
-//#endif
-}
-
-/*
- * Uses cLib function:
- *
- *  pfe_enable_pio(PIO pin #, mode)
- *      Mode 4 = Output init value = High
- *      Mode 5 = Output init value = Low
- */
-byte selectedBank = 0xFF;
-void selectBank(byte bank)
-{
-    if (selectedBank != bank)
-    {
-//#if DEBUG
-    printf("BANK %d: PIO 2 as %c, PIO 3 as %c\n", bank, bank & 0x01 ? 'H' : 'L', bank & 0x02 ? 'H' : 'L');
-//#endif
-        hal_write_pio(2, bank & 0x01);
-        hal_write_pio(3, bank & 0x02);
-        selectedBank = bank;
-    }
+    pfe_enable_pio(2, bank & 0x01 ? 4 : 5); // if bank is 1 or 3, set PIO2 high, otherwise set PIO2 low
+    pfe_enable_pio(3, bank & 0x02 ? 4 : 5); // if bank is 3 or 4, set PIO3 high, otherwise set PIO3 low
+    hal_write_bus((addr & 0x0FF) | 0x100, val, 0xFFFF, 0x0000); // Write to data bus on corrected address (always in 0x100..0x1FF range)
 }
 
 /*************************************************************
  *                      LCD RELATED
  *************************************************************/
 
-void setLCDLine(byte line, const char * format, ...)
+void clearLCD()
 {
-    va_list aptr;
-    va_start(aptr, format);
-
-    byte buffer[LCD_LINE_SIZE + 1];
-    buffer[LCD_LINE_SIZE] = 0x00;
-
-    vsprintf(buffer, format, aptr);
-    printf("Write to LCD line %d: %s\n", line, buffer);//todo: debug
-
-    byte pos = 0x00;
-    if (line == 1) pos = 0x40;
-    else if (line == 2) pos = 0x14;
-    else if (line == 3) pos = 0x54;
-    writeDatabus(RAM_LCD_CMD, pos);
-    writeDatabus(RAM_INT_SEND, CMD_LCD_POS);
-    delay(1);
-
-//    address offset = RAM_LCD_START;// + (LCD_LINE_SIZE * (line % LCD_LINES));
-    address i = 0;
-    for (; i < strlen(buffer); i++) // chars
+    for (address addr = RAM_LCD_START; addr <= RAM_LCD_END; addr++)
     {
-        writeDatabus(i + RAM_LCD_START, buffer[i]);
+        writeDatabus(addr, ' ');
+    }
+    writeDatabus(RAM_LCD_CMD, 0x01);
+    writeDatabus(RAM_INT_SEND, CMD_LCD_CMD);
+}
+
+void setLCDLine(byte line, const char * text)
+{
+    address offset = RAM_LCD_START;
+
+#if LCD_LINES == 2
+    if (line == 1 || line == 3) offset += 40;
+#elif LCD_LINES == 4
+    if (line % 2 != 0) offset += 40;
+    if (line > 1) offset += 0x14;
+#endif
+
+    address i = 0;
+    for (; i < strlen(text); i++) // chars
+    {
+        writeDatabus(i + offset, text[i]);
     }
     for (; i < LCD_LINE_SIZE; i++) // spaces
     {
-        writeDatabus(i + RAM_LCD_START, ' ');
+        writeDatabus(i + offset, ' ');
     }
-    writeDatabus(LCD_LINE_SIZE + RAM_LCD_START, 0x00);
-
-    va_end(aptr);
-    writeDatabus(RAM_INT_SEND, CMD_LCD_CHAR);
-    delay(10);
+    writeDatabus(RAM_INT_SEND, CMD_LCD_CL_PR);
+    delay(100);
 }
 
-/*************************************************************
- *                      TIME RELATED
- *************************************************************/
-
-void initTime()
+void setLCDLineFormat(byte line, const char * format, ...)
 {
-    /*
-     * HTTP GET time from http://currentmillis.com/api/seconds-since-unix-epoch.php
-     */
-    int temp = 0;
-    char buffer[301];
-    httpGet("currentmillis.com/api/seconds-since-unix-epoch.php", buffer, 300, "8.8.8.8");
-    const char newline[2] = "\n";
-    unsigned long int time = 0;
-    char * token;
-    token = strtok(buffer, newline);
+    byte buffer[LCD_LINE_SIZE + 1];
+    buffer[LCD_LINE_SIZE] = 0x00;
 
-    while (token != NULL)
-    {
-        if (temp == 0)
-        {
-            sscanf(token, "HTTP/1.1 %d", &temp);
-            if (temp != 200)
-            {
-                printf("ERROR [RTC init] HTTP code != 200: %d\n", temp);
-                printf("%s\n", buffer);
-                return;
-            }
-        }
-        else
-        {
-            sscanf(token, "%lu", &time);
-            token = strtok(NULL, newline);
-            if (time != 0) break;
-        }
-    }
+    /* Start magic */
+    va_list aptr;
+    va_start(aptr, format);
+    vsprintf(buffer, format, aptr);
+    va_end(aptr);
+    /* End magic */
 
-    TimeDate_Structure timeDate;
-
-    // We are well past 1999 by now
-    timeDate.dcen = 20; // 20xx
-
-    /*
-     * TIME CONVERSION SOURCE: http://codereview.stackexchange.com/questions/38275/convert-between-date-time-and-time-stamp-without-using-std-library-routines
-     * HAS BEEN ADJUSTED: added +1day for 2000 being a leap year and -30yrs for linux epoch
-     * ONLY ACCURATE FROM 2000 to 2099
-     */
-
-    // Easy part
-    timeDate.sec = time % 60;
-    time /= 60;
-    timeDate.min = time % 60;
-    time /= 60;
-    timeDate.hr = TIMEZONE_OFFSET + (time % 24);
-    time /= 24;
-
-    // Now the years: Uses amount of days per 4 years
-    byte years = (time / (365 * 4 + 1) * 4) - 30;
-    time %= (365 * 4 + 1); // Time is now in days!
-    // 1 day for 2000 as leap year
-    time += 1;
-
-    // Magic numbers aka (days per month, per 4 years)
-    const static unsigned short days[4][12] = {
-            { 0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335 },
-            { 366, 397, 425, 456, 486, 517, 547, 578, 609, 639, 670, 700 },
-            { 731, 762, 790, 821, 851, 882, 912, 943, 974, 1004, 1035, 1065 },
-            { 1096, 1127, 1155, 1186, 1216, 1247, 1277, 1308, 1339, 1369, 1400, 1430 }
-    };
-
-    byte year;
-    for (year = 3; year > 0; year--)
-    {
-        if (time >= days[year][0]) break;
-    }
-
-    byte month;
-    for (month = 11; month > 0; month--)
-    {
-        if (time >= days[year][month]) break;
-    }
-
-    timeDate.yr = years + year;
-    timeDate.mn = month + 1;
-    timeDate.dy = time - days[year][month] + 1;
-
-    printf("System clock set to: %02d%02d-%02d-%02d @ %02d:%02d:%02d\n", timeDate.dcen, timeDate.yr, timeDate.mn, timeDate.dy, timeDate.hr, timeDate.min, timeDate.sec);
-    RTX_Set_TimeDate(&timeDate); // Save to system clock
+    setLCDLine(line, buffer);
 }
 
 /****************************************************************************************************
@@ -376,20 +281,18 @@ byte LCDupdateRunning;
 void LCDupdate()
 {
     LCDupdateRunning = 1;
-    byte ip[16];
-    TimeDate_Structure timeDate;
+    byte ip[16], oldIp[16];
 
     while (LCDupdateRunning)
     {
         Get_IPConfig(ip, NULL, NULL);
-        if (LCD_LINE_SIZE >= 20) setLCDLine(2, "IP: %s", ip);
-        else setLCDLine(2, "%s", ip);
 
-        RTX_Get_TimeDate(&timeDate);
-        if (LCD_LINE_SIZE >= 19) setLCDLine(3, "%02d%02d-%02d-%02d %02d:%02d:%02d", timeDate.dcen, timeDate.yr, timeDate.mn, timeDate.dy, timeDate.hr, timeDate.min, timeDate.sec);
-        else setLCDLine(3, "%02d-%02d-%02d %02d:%02d", timeDate.yr, timeDate.mn, timeDate.dy, timeDate.hr, timeDate.min);
-
-        RTX_Sleep_Time(900);
+        if (strcmp(ip, oldIp) != 0)
+        {
+            strcpy(oldIp, ip);
+            setLCDLine(1, ip);
+        }
+        RTX_Sleep_Time(2500);
     }
 }
 
@@ -490,10 +393,19 @@ void test()
     writeDatabus(RAM_INT_SEND, CMD_LCD_CHAR);
     */
 
-    setLCDLine(0, "TEST Line 0"); delay(1000);
-    setLCDLine(1, "TEST Line 1"); delay(1000);
-    setLCDLine(2, "TEST Line 2"); delay(1000);
-    setLCDLine(3, "TEST Line 3"); delay(1000);
+    setLCDLine(0, "TEST Line 0"); delay(100);
+    setLCDLine(1, "TEST Line 1"); delay(100);
+    setLCDLine(2, "TEST Line 2"); delay(100);
+    setLCDLine(3, "TEST Line 3"); delay(100);
+}
+
+byte intByte = 0x00;
+
+void huge _pascal _saveregs int0handler() // Declare this function as an ISR!
+{
+    intByte = readDatabus(RAM_INT_GET); // read location 1fe and reset int condition
+    // Give specific int0 EOI to the PIC (SC12 i/o base address ff00h) see 80186 USERS MAN.
+    //outport (0xff22, INTR0);
 }
 
 void main()
@@ -506,14 +418,23 @@ void main()
      */
     enableDatabus();
 
+    writeDatabus(RAM_INT_SEND, CMD_LCD_BL_ON);
+
+    writeDatabus(RAM_LCD_CMD, 0x0C); // Blink off
+    writeDatabus(RAM_INT_SEND, CMD_LCD_CMD);
+
+    clearLCD();
+
     printf("\n\nAVR firmware version id: %d 0x%02x\n\n\n", readDatabus(RAM_VERSION_1), readDatabus(RAM_VERSION_2));
+    setLCDLine(0, "MMM by Dries007");
+    setLCDLine(1, "Booting...");
 
     // Setup AVR for LCD
     //initLcd();
 
     // Print firmware info to LCD
-    setLCDLine(0, "(C) Dries007 '%s", CYEAR);
-    //setLCDLine(1, "Version %s.%d", VERSION, readDatabus(ADDRESS_FW_VER));
+    //setLCDLineFormat(0, "(C) Dries007 '%s", CYEAR);
+    //setLCDLineFormat(1, "Version %s.%d", VERSION, readDatabus(ADDRESS_FW_VER));
 
     // Ethernet connection check
     if (BIOS_Ethernet_State(NULL, NULL))
@@ -523,13 +444,9 @@ void main()
         return;
     }
 
-    // Do time setup
-    printf("Fetching time...\n");
-    initTime();
-
     /**
      * RUN ALL TASKS
-     *
+     */
     int result = RTX_Create_Task(&LCDupdateID , &LCDupdateTaskDefBlock);
 
     if (result!=0)
@@ -540,12 +457,20 @@ void main()
         endProgram();
     }
 
+    // Do time setup
+    // printf("Fetching time...\n");
+    // initTime();
+
     /**
      * CGI methods
      */
 
     printf("Installing CGI methods\n");
     installCGIMethods();
+
+    //pfe_enable_int(0);
+    //pfe_set_edge_level_intr_mode(0, 0);
+    //hal_install_isr(0, 1, &int0handler);
 
     /*
      * MENU
@@ -559,12 +484,14 @@ void main()
         printf("[R] Reboot\n");
         printf("[D] Debug RAM Dump\n");
         printf("[S] Set RAM manually\n");
-        printf("[T] Redo time update\n");
+        // printf("[T] Redo time update\n");
         printf("[U] Print all known users\n");
         printf("[I] Interrupt test to AVR\n");
-        printf("[L] Print Time and IP to LCd\n");
 
         scanf("%c%*c", &key);
+
+        printf("IntByte: 0x%02x Real: 0x%02x\n", intByte, readDatabus(RAM_INT_GET));
+
         switch (key & ~0x20)
         {
         case 'X':
@@ -579,42 +506,15 @@ void main()
         case 'S':
             manualram();
             break;
-        case 'T':
-            initTime();
-            break;
+//        case 'T':
+//            initTime();
+//            break;
         case 'U':
             printAllUsers();
             break;
         case 'I':
             test();
             break;
-        case 'L':
-        {
-            byte ip[16];
-            TimeDate_Structure timeDate;
-
-            Get_IPConfig(ip, NULL, NULL);
-            if (LCD_LINE_SIZE >= 20) setLCDLine(2, "IP: %s", ip);
-            else setLCDLine(2, "%s", ip);
-
-            RTX_Get_TimeDate(&timeDate);
-            if (LCD_LINE_SIZE >= 19) setLCDLine(3, "%02d%02d-%02d-%02d %02d:%02d:%02d", timeDate.dcen, timeDate.yr, timeDate.mn, timeDate.dy, timeDate.hr, timeDate.min, timeDate.sec);
-            else setLCDLine(3, "%02d-%02d-%02d %02d:%02d", timeDate.yr, timeDate.mn, timeDate.dy, timeDate.hr, timeDate.min);
-        }
-            break;
-        /*
-        {
-            char buffer[80];
-            scanf("%s%*c", &buffer);
-            for (address i = 0; i < 80; i++)
-            {
-                writeDatabus(i + RAM_LCD_START, buffer[i]);
-            }
-            writeDatabus(RAM_LCD_END, 0x00);
-            writeDatabus(RAM_INT_SEND, CMD_LCD_CL_PR);
-        }
-        break;
-        */
         default:
             printf("Char not in menu: %c\n", key);
         }
@@ -624,34 +524,6 @@ void main()
 /****************************************************************************************************
  *                                              WEB
  ****************************************************************************************************/
-
-/*************************************************************
- *                      CLOCK (debug)
- *************************************************************/
-
-void huge _pascal _saveregs cgiClockFunction(rpCgiPtr CgiRequest)
-{
-    static char pageBuffer[2048];  // Buffer to contain web page
-    char tmpBuffer[512]; // Buffer for string manipulation functions
-
-    TimeDate_Structure timeDate;
-    RTX_Get_TimeDate(&timeDate);
-
-    sprintf(pageBuffer, "<html><head><meta http-equiv=\"refresh\" content=\"1\"><title>");
-
-    if (timeDate.sec % 2) strcat(pageBuffer, "Tick</title></head><body><h1>");
-    else strcat(pageBuffer, "Tock</title></head><body><h1>");
-
-    sprintf(tmpBuffer, "%02d%02d-%02d-%02d @ %02d:%02d:%02d\n", timeDate.dcen, timeDate.yr, timeDate.mn, timeDate.dy, timeDate.hr, timeDate.min, timeDate.sec);
-
-    strcat(pageBuffer, tmpBuffer);
-    strcat(pageBuffer, "</h1></body></html>");
-
-    CgiRequest->fHttpResponse = CgiHttpOk;
-    CgiRequest->fDataType = CGIDataTypeHtml;
-    CgiRequest->fResponseBufferPtr = pageBuffer;
-    CgiRequest->fResponseBufferLength = strlen(pageBuffer);
-}
 
 /*************************************************************
  *                      TEMPLATE PARTS
@@ -993,9 +865,9 @@ void huge _pascal _saveregs cgiPlayFunction(rpCgiPtr CgiRequest)
 
 typedef void huge _pascal _saveregs (*CGIfn)(rpCgiPtr); // Because function pointer syntax in unreadable
 
-char *cgiNames[] =      {"clock",           "home",          "pickUsername",            "start",            "play"};
-int cgiMethods[] =      {CgiHttpGet,        CgiHttpGet,      CgiHttpPost,               CgiHttpGet,         CgiHttpGet };
-CGIfn cgiFunctions[] =  {cgiClockFunction,  cgiHomeFunction, cgiPickUsernameFunction,   cgiStartFunction,   cgiPlayFunction};
+char *cgiNames[] =      {/*"clock",*/           "home",          "pickUsername",            "start",            "play"};
+int cgiMethods[] =      {/*CgiHttpGet,*/        CgiHttpGet,      CgiHttpPost,               CgiHttpGet,         CgiHttpGet };
+CGIfn cgiFunctions[] =  {/*cgiClockFunction,*/  cgiHomeFunction, cgiPickUsernameFunction,   cgiStartFunction,   cgiPlayFunction};
 
 void installCGIMethods()
 {

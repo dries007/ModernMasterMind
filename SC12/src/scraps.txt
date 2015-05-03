@@ -1,0 +1,118 @@
+/*************************************************************
+ *                      CLOCK (debug)
+ *************************************************************/
+
+//void huge _pascal _saveregs cgiClockFunction(rpCgiPtr CgiRequest)
+//{
+//    static char pageBuffer[2048];  // Buffer to contain web page
+//    char tmpBuffer[512]; // Buffer for string manipulation functions
+//
+//    TimeDate_Structure timeDate;
+//    RTX_Get_TimeDate(&timeDate);
+//
+//    sprintf(pageBuffer, "<html><head><meta http-equiv=\"refresh\" content=\"1\"><title>");
+//
+//    if (timeDate.sec % 2) strcat(pageBuffer, "Tick</title></head><body><h1>");
+//    else strcat(pageBuffer, "Tock</title></head><body><h1>");
+//
+//    sprintf(tmpBuffer, "%02d%02d-%02d-%02d @ %02d:%02d:%02d\n", timeDate.dcen, timeDate.yr, timeDate.mn, timeDate.dy, timeDate.hr, timeDate.min, timeDate.sec);
+//
+//    strcat(pageBuffer, tmpBuffer);
+//    strcat(pageBuffer, "</h1></body></html>");
+//
+//    CgiRequest->fHttpResponse = CgiHttpOk;
+//    CgiRequest->fDataType = CGIDataTypeHtml;
+//    CgiRequest->fResponseBufferPtr = pageBuffer;
+//    CgiRequest->fResponseBufferLength = strlen(pageBuffer);
+//}
+
+
+/*************************************************************
+ *                      TIME RELATED
+ *************************************************************/
+
+//void initTime()
+//{
+//    /*
+//     * HTTP GET time from http://currentmillis.com/api/seconds-since-unix-epoch.php
+//     */
+//    int temp = 0;
+//    char buffer[301];
+//    httpGet("currentmillis.com/api/seconds-since-unix-epoch.php", buffer, 300, "8.8.8.8");
+//    const char newline[2] = "\n";
+//    unsigned long int time = 0;
+//    char * token;
+//    token = strtok(buffer, newline);
+//
+//    while (token != NULL)
+//    {
+//        if (temp == 0)
+//        {
+//            sscanf(token, "HTTP/1.1 %d", &temp);
+//            if (temp != 200)
+//            {
+//                printf("ERROR [RTC init] HTTP code != 200: %d\n", temp);
+//                printf("%s\n", buffer);
+//                return;
+//            }
+//        }
+//        else
+//        {
+//            sscanf(token, "%lu", &time);
+//            token = strtok(NULL, newline);
+//            if (time != 0) break;
+//        }
+//    }
+//
+//    TimeDate_Structure timeDate;
+//
+//    // We are well past 1999 by now
+//    timeDate.dcen = 20; // 20xx
+//
+//    /*
+//     * TIME CONVERSION SOURCE: http://codereview.stackexchange.com/questions/38275/convert-between-date-time-and-time-stamp-without-using-std-library-routines
+//     * HAS BEEN ADJUSTED: added +1day for 2000 being a leap year and -30yrs for linux epoch
+//     * ONLY ACCURATE FROM 2000 to 2099
+//     */
+//
+//    // Easy part
+//    timeDate.sec = time % 60;
+//    time /= 60;
+//    timeDate.min = time % 60;
+//    time /= 60;
+//    timeDate.hr = TIMEZONE_OFFSET + (time % 24);
+//    time /= 24;
+//
+//    // Now the years: Uses amount of days per 4 years
+//    byte years = (time / (365 * 4 + 1) * 4) - 30;
+//    time %= (365 * 4 + 1); // Time is now in days!
+//    // 1 day for 2000 as leap year
+//    time += 1;
+//
+//    // Magic numbers aka (days per month, per 4 years)
+//    const static unsigned short days[4][12] = {
+//            { 0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335 },
+//            { 366, 397, 425, 456, 486, 517, 547, 578, 609, 639, 670, 700 },
+//            { 731, 762, 790, 821, 851, 882, 912, 943, 974, 1004, 1035, 1065 },
+//            { 1096, 1127, 1155, 1186, 1216, 1247, 1277, 1308, 1339, 1369, 1400, 1430 }
+//    };
+//
+//    byte year;
+//    for (year = 3; year > 0; year--)
+//    {
+//        if (time >= days[year][0]) break;
+//    }
+//
+//    byte month;
+//    for (month = 11; month > 0; month--)
+//    {
+//        if (time >= days[year][month]) break;
+//    }
+//
+//    timeDate.yr = years + year;
+//    timeDate.mn = month + 1;
+//    timeDate.dy = time - days[year][month] + 1;
+//
+//    printf("System clock set to: %02d%02d-%02d-%02d @ %02d:%02d:%02d\n", timeDate.dcen, timeDate.yr, timeDate.mn, timeDate.dy, timeDate.hr, timeDate.min, timeDate.sec);
+//    RTX_Set_TimeDate(&timeDate); // Save to system clock
+//}
