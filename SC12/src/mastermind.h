@@ -18,7 +18,7 @@
 #include <dos.h>
 #include <stdarg.h>
 #include <ctype.h>
-#include <RTOS.H>
+#include <rtos.h>
 #include <i86.h>
 
 #include "ramdump.h"
