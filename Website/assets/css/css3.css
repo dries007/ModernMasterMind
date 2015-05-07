@@ -76,6 +76,14 @@ img.small
     width: 600px;
 }
 
+.w800 {
+    width: 800px;
+}
+
+.wfull {
+    width: 100%;
+}
+
 .fl-left
 {
     float: left;
@@ -123,6 +131,24 @@ img.small
     overflow: hidden;
 }
 
+table
+{
+    border-collapse: collapse;
+    border-radius: 5px;
+}
+
+table td,th
+{
+    padding: 10px;
+    border: 1px solid #000000;
+}
+
+.center
+{
+    margin: 0 auto;
+    text-align: center;
+}
+
 /* Structure parts
    --------------- */
 
@@ -140,6 +166,7 @@ header
     display: block;
     width: 100%;
     min-height: 120px;
+    position: relative;
 }
 
 #content
@@ -201,13 +228,13 @@ header h2
     padding-bottom: 10px;
 }
 
-header ul
+header #menu
 {
     padding-top: 10px;
     padding-bottom: 5px;
 }
 
-header li
+header #menu li
 {
     position: relative;
     display: inline;
@@ -220,14 +247,37 @@ header li
     margin: 0 10px;
 }
 
-header li.active
+header #menu li.active
 {
     z-index: 1;
 }
 
-header li.inactive
+header #menu li.inactive
 {
     background-image: linear-gradient(to bottom, #ffffff, #dbdbdb);
+}
+
+header #submenu {
+    float: right;
+    position: absolute;
+    right: -150px;
+    display: block;
+    width: 140px;
+    overflow: hidden;
+    background: #ffffff;
+    text-align: left;
+    padding: 10px 5px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px 0 #a2a2a2;
+}
+
+header #submenu li {
+    display: inline-block;
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    padding: 2px;
+    text-overflow: ellipsis;
 }
 
 /* Links

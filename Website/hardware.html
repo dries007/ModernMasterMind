@@ -52,7 +52,8 @@
         <a href="home2.html"><img src="assets/img/logo.png"/></a>
         <h1>ModernMasterMind</h1>
         <h2>De klassieker in een modern jasje</h2>
-        <ul></ul>
+        <ul id="menu"></ul>
+        <ul id="submenu"></ul>
     </header>
     <div id="content" class="page">
         <p>Dit project gebruikt 2 controllers, een AVR ATMega128A en een Beck SC12. De reden hiervoor is dat de SC12 ingebouwde ethernet-mogelijkheden heeft, maar niet snel genoeg is om de zeer timings kritieke LEDs aan te sturen. Ook het lage aantal beschikbare pinnen op de SC12 is een probleem. Om deze problemen op te lossen is er dus een AVR microcontroller toegevoegd. Die is wel in staat de LEDs aan te sturen, en heeft genoeg pinnen beschikbaar om nog een LCD aan te suren en keypad uit te lezen. De communicatie tussen de AVR en de SC12 gebeurt door middel van een gedeeld geheugen (een dual-port RAM chip).</p>

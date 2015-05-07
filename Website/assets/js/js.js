@@ -29,7 +29,8 @@
  * Menu structure
  */
 $(function() {
-    var list = $("header").find("ul");
+    /** MAIN MENU */
+    var list = $("header").find("#menu");
     if (list == null) return; // No menu
 
     var pages = [
@@ -84,6 +85,19 @@ $(function() {
         }
         link.append($("<span>").text(page.name));
     }
+
+    /** SIDE MENU */
+    var subElement = $("#submenu");
+    var subs = $("#content").find(".sub");
+    for (var i = 0; i < subs.length; i++)
+    {
+        var item = $("<li>" + subs[i].innerHTML + "</li>");
+        item.attr("for", subs[i].id);
+        if (subs[i].tagName.toLowerCase() == "h2") item.css("text-indent", "5px");
+        else if (subs[i].tagName.toLowerCase() == "h3") item.css("text-indent", "10px");
+        item.click(function () { window.location.hash = "#" + this.getAttribute("for"); });
+        subElement.append(item);
+    }
 });
 
 /**
@@ -99,6 +113,9 @@ function setSizesAndPadding()
 
     whitespace = Math.floor(whitespace / 2);
     whitespace = Math.min(whitespace, 150);
+
+    if (whitespace != 150) $("#submenu").css("display", "none");
+    else $("#submenu").css("display", "inherit");
 
     if (whitespace > 0) container.css("padding", "0 " + whitespace + "px");
     else container.css("padding", "0");
