@@ -137,7 +137,7 @@ table
     border-radius: 5px;
 }
 
-table td,th
+.borders td,th
 {
     padding: 10px;
     border: 1px solid #000000;

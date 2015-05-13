@@ -106,22 +106,26 @@ $(function() {
  */
 function setSizesAndPadding()
 {
-    var container = $("#container");
+    var container = document.getElementById("container"); //$("#container");
     if (container == null) return;
 
-    var whitespace = $(window).width() - container.width();
+    var whitespace = window.innerWidth - container.offsetWidth; // $(window).width() - container.width();
 
     whitespace = Math.floor(whitespace / 2);
     whitespace = Math.min(whitespace, 150);
 
-    if (whitespace != 150) $("#submenu").css("display", "none");
-    else $("#submenu").css("display", "inherit");
+    var submenu = document.getElementById("submenu");
+    if (submenu != null)
+    {
+        if (whitespace != 150) submenu.style.display = "none";
+        else submenu.style.display = "inherit";
+    }
 
-    if (whitespace > 0) container.css("padding", "0 " + whitespace + "px");
-    else container.css("padding", "0");
+    if (whitespace > 0) container.style.padding = "0 " + whitespace + "px";
+    else container.style.padding = "0";
 
-    // - 2 to make up for BS inconsistencies in chrome (and/or others?)
-    $("#content").innerHeight(container.height() - $("header").outerHeight() - $("footer").outerHeight() - 10);
+    // - 10 to make up for BS inconsistencies in chrome (and/or others?)
+    document.getElementById("content").style.height = container.offsetHeight - document.getElementsByTagName("header")[0].offsetHeight - document.getElementsByTagName("footer")[0].offsetHeight - 10 + "px";
 }
 
 /**
