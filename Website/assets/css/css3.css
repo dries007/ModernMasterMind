@@ -105,7 +105,7 @@ img.small /* Logos & avatars images */
     display: block;
 }
 
-.img-container label
+.img-container span
 {
     color: gray;
     text-align: center;

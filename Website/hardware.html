@@ -1,37 +1,11 @@
-<!--
-    The MIT License (MIT)
-
-    Copyright (c) 2015 Dries007
-
-    Made for/in relation to an education at Thomas More Mechelen-Antwerpen vzw
-    Campus De Nayer - Professionele bachelor elektronica-ict
-
-    Permission is hereby granted, free of charge, to any person obtaining a copy
-    of this software and associated documentation files (the "Software"), to deal
-    in the Software without restriction, including without limitation the rights
-    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-    copies of the Software, and to permit persons to whom the Software is
-    furnished to do so, subject to the following conditions:
-
-    The above copyright notice and this permission notice shall be included in all
-    copies or substantial portions of the Software.
-
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-    SOFTWARE.
- -->
 <!DOCTYPE html>
+<!-- License: https://github.com/dries007/ModernMasterMind/blob/master/LICENSE -->
 <html>
 <head lang="en">
     <!-- Meta -->
-    <meta charset="UTF-8">
-    <meta lang="nl">
-    <meta name="author" content="Dries007">
-    <meta name="copyright" content="&copy; 2015 - Dries007.net">
+    <meta charset="UTF-8"/>
+    <meta name="author" content="Dries007"/>
+    <meta name="copyright" content="&copy; 2015 - Dries007.net"/>
     <meta name="google" content="notranslate"/>
 
     <!-- Styles -->
@@ -50,7 +24,7 @@
 <div id="container">
     <!-- Header -->
     <header>
-        <a href="home2.html"><img src="assets/img/logo.png"/></a>
+        <a href="home2.html"><img src="assets/img/logo.png" alt="[logo]"/></a>
         <h1>ModernMasterMind</h1>
         <h2>De klassieker in een modern jasje</h2>
         <ul id="menu"></ul><!-- Done by JS -->
@@ -64,26 +38,26 @@
             <!-- De controllers -->
             <h2 class="sub" id="controllers">De controllers</h2>
             <p>Dit project gebruikt 2 controllers, een AVR ATMega128A en een Beck SC12. De reden hiervoor is dat de SC12 ingebouwde ethernet-mogelijkheden heeft, maar niet snel genoeg is om de zeer timings kritieke LEDs aan te sturen. Ook het lage aantal beschikbare pinnen op de SC12 was een probleem. Om deze problemen op te lossen is er dus een AVR microcontroller toegevoegd. Die is wel in staat de LEDs aan te sturen, en heeft genoeg pinnen beschikbaar om nog een LCD aan te sturen en keypad uit te lezen. De communicatie tussen de AVR en de SC12 gebeurt door middel van een gedeeld geheugen (een dual-port RAM chip).</p>
-            <p class="img-container"><img src="assets/img/boards.jpg" class="w600" alt="[Het RIOT bord en mijn eigen versie]"><label>Links: RIOT bord, Rechts: Eigen PCB</label></p>
+            <p class="img-container"><img src="assets/img/boards.jpg" class="w600" alt="[Het RIOT bord en mijn eigen versie]"><span>Links: RIOT bord, Rechts: Eigen PCB</span></p>
             <p>Op mijn versie van het bord zijn onnodige onderdelen weggelaten. Onder andere de UART naar RS232, de Real Time Clock en het voedingscircuit moesten er aan geloven.</p>
                 <!-- Het interactieschema -->
                 <h3 class="sub" id="blockschema">Het interactieschema</h3>
-                <p class="img-container"><img src="assets/img/hardware.png" alt="[Flowchart Hardware]"><label>Links: RIOT bord, Rechts: Eigen PCB</label></p>
+                <p class="img-container"><img src="assets/img/hardware.png" alt="[Flowchart Hardware]"><span>Links: RIOT bord, Rechts: Eigen PCB</span></p>
                 <p>De SC12 zorgt voor de webinterface, een AVR ATMega128 stuurt de LCD en LEDs aan.</p>
             <!-- De LEDs -->
             <h2 class="sub" id="leds">De LEDs</h2>
             <p>Omdat een volledig mastermind bord 12 x 8 = 96 RGB LEDs nodig heeft, heb ik gekozen voor WS2812 LEDS. Deze LEDs hebben, ongeacht de hoeveelheid, slechts 1 signaalpin op een (snelle) controller nodig. Ze worden namelijk als een lange lijn aan elkaar gekoppeld.</p>
-            <p class="img-container"><img src="assets/img/leds_psu.jpg" class="w600" alt="[De LEDs en voeding]"><label>De losse LEDs, nog in verpakking met de voeding</label></p>
+            <p class="img-container"><img src="assets/img/leds_psu.jpg" class="w600" alt="[De LEDs en voeding]"><span>De losse LEDs, nog in verpakking met de voeding</span></p>
             <p>Een ander probleem met 96 RGB LEDs is dat ze veel stroom kunnen verbruiken, namelijk 60 mA per LED. 6A in totaal dus. Daarom heb ik een professionele voeding gekocht van 35W @ 5V.</p>
-            <p class="img-container"><img src="assets/img/ledstrip.jpg" class="w600" alt="[Het afgewerkte LED scherm]"><label>Het afgewerkte LED scherm</label></p>
+            <p class="img-container"><img src="assets/img/ledstrip.jpg" class="w600" alt="[Het afgewerkte LED scherm]"><span>Het afgewerkte LED scherm</span></p>
             <!-- De PCBs -->
             <h2 class="sub" id="pcbs">De PCBs</h2>
             <p>Ik heb voor dit project zelf printplaten getekend (met Altium)</p>
-            <p class="img-container"><img src="assets/img/pcbs.jpg" class="w600" alt="[De printplaten]"><label>De overgebleven, onbestukte printplaten</label></p>
+            <p class="img-container"><img src="assets/img/pcbs.jpg" class="w600" alt="[De printplaten]"><span>De overgebleven, onbestukte printplaten</span></p>
             <p>De grote printplaat is gebaseerd op het RIOT board. Er zitten een paar schoonheidsfoutjes in het ontwerp, maar niets dat niet met een beetje geduld en wat software kan worden opgelost.</p>
             <p>De kleine printplaatjes zijn bedoeld om het aansluiten van een LCD module gemakkelijk te maken. Ze zijn ontworpen om ook gebruikt te worden in andere projecten. Zo is er plaats voorzien voor de extra componenten, nodig voor de achtergrondverlichting, omdat die vaak verschillen per model.</p>
             <p>Voor de LEDs zijn aparte panel printen besteld. 100 kleine breakout printjes per panel, zodat ik uiteindelijk (na het opblazen of verbranden van enkele) net voldoende had met 1 panel. Het solderen van de LEDs op het panel en het verbinden heeft wel wat tijd gekost, het leveren duurde ook langer dan verwacht.</p>
-            <p class="img-container"><img src="assets/img/ledpanel.jpg" class="w600" alt="[Een LED panel]"><label>De LED panel PCBs, de zwart gekleurde LEDs zijn stuk.</label></p>
+            <p class="img-container"><img src="assets/img/ledpanel.jpg" class="w600" alt="[Een LED panel]"><span>De LED panel PCBs, de zwart gekleurde LEDs zijn stuk.</span></p>
     </div>
     <!-- Footer -->
     <footer>
