@@ -48,19 +48,39 @@
 </head>
 <body>
 <div id="container">
+    <!-- Header -->
     <header>
         <a href="home2.html"><img src="assets/img/logo.png"/></a>
         <h1>ModernMasterMind</h1>
         <h2>De klassieker in een modern jasje</h2>
-        <ul id="menu"></ul>
-        <ul id="submenu"></ul>
+        <ul id="menu"></ul><!-- Done by JS -->
+        <ul id="submenu"></ul><!-- Done by JS -->
     </header>
+    <!-- Content -->
     <div id="content" class="page">
-        <h1 class="sub">De Software</h1>
-        <p>Bijna alle software voor dit project is geschreven in C. De uitzondering hierop is de driver voor de WS2812 LEDs. Die is, omdat ze zeer timing kritiek is, in inline assembly geschreven is.</p>
-        <h2 class="sub">Software op SC12</h2>
-        <p>De SC12 draait op een real time besturingssyteem dat sterk lijkt op DOS. Het vinden van de documentatie en een compiler die draait op 64 bit windows blijk moeilijk.</p>
+        <!-- De Software -->
+        <h1 class="sub" id="software">De Software</h1>
+        <p>Bijna alle software voor dit project is geschreven in C. De uitzondering hierop is de driver voor de WS2812 LEDs. Die is, omdat ze zeer timing kritiek is, in inline assembly geschreven.</p>
+            <!-- Software op SC12 -->
+            <h2 class="sub" id="softwaresc12">Software op SC12</h2>
+            <p>De SC12 draait op een real time besturingssyteem dat sterk lijkt op DOS. Het vinden van de documentatie en een compiler die draait op 64 bit windows was moeilijk. De eerste optie was het gebruiken van een virtual machine, maaar dit is helemaal niet handig in gebruik. Ook zat ik dan vast met een verouderde IDE. Na wat verder zoeken bleek dat de linux versie van OpenWacom zonder problemen 80168 code kan compilen. Aangezien ik een servertje op Ubuntu heb draaien was dit geen probleem. Hierdoor kon ik Eclipse gebruiken als IDE.</p>
+            <p>De eigelijke code is <a href="https://github.com/dries007/ModernMasterMind/tree/master/SC12">hier</a> beschikbaar.</p>
+                <!-- flowcharts-->
+                <h3 class="sub" id="blocksc12">De flowchart</h3>
+                <p>Ik heb de flowchart opgedeeld in verschillende delen om de leesbaarheid te verhogen.</p>
+                <!-- In separate <p>'s to put some space between the images -->
+                <p class="img-container"><img src="assets/img/SC12flowchart.png" alt="[De SC12 flowchart, deel 1]"></p>
+                <p class="img-container"><img src="assets/img/WebserverP1.png" alt="[De SC12 flowchart, deel 2]"></p>
+                <p class="img-container"><img src="assets/img/WebserverP2.png" alt="[De SC12 flowchart, deel 3]"><label>SC12 Flowchart</label></p>
+            <!-- Software op SC12 -->
+            <h2 class="sub" id="softwareavr">Software op AVR</h2>
+            <p>De AVR Atmega128 doet eigenlijk niet veel. Enkel als de SC12 een commando stuurt (via een speciaal adress in het DP RAM) word de AVR via een interrupt wakker gemaakt.</p>
+            <p>De eigelijke code is <a href="https://github.com/dries007/ModernMasterMind/tree/master/AVR">hier</a> beschikbaar.</p>
+                <!-- flowcharts-->
+                <h3 class="sub" id="blockavr">De flowchart</h3>
+                <p class="img-container"><img src="assets/img/AVRflowchart.png" alt="[De AVR flowchart]"><label>AVR Flowchart</label></p>
     </div>
+    <!-- Footer -->
     <footer>
         <p>&copy;&nbsp;2015&nbsp;-
             <a href="http://dries007.net">Dries007.net</a>&nbsp;-

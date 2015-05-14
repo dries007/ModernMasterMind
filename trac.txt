@@ -1,0 +1,39 @@
+[[PageOutline]]
+
+= Modern MasterMind =
+
+Het spel Mastermind maken met een RGB LED display. De bediening gebeurt via een web-interface.
+
+Dit project gebruikt 2 controllers, een AVR ATMega128A en een Beck SC12. De reden hiervoor is dat de SC12 ingebouwde ethernet-mogelijkheden heeft, maar niet snel genoeg is om de zeer timings kritieke LEDs aan te sturen. Ook het lage aantal beschikbare pinnen op de SC12 is een probleem. Om deze problemen op te lossen is er dus een AVR microcontroller toegevoegd. Die is wel in staat de LEDs aan te sturen, en heeft genoeg pinnen beschikbaar om nog een LCD aan te suren en keypad uit te lezen. De communicatie tussen de AVR en de SC12 gebeurt door middel van een gedeeld geheugen (een dual-port RAM chip).
+
+In plaats van de code hier tussen te plakken en alles onoverzichtelijk te maken, heb ik alle source code (met commentaar) op Github gezet.[[BR]]
+Klik [https://github.com/dries007/ModernMasterMind/tree/master/AVR hier] voor meer informatie over de AVR code.[[BR]]
+Klik [https://github.com/dries007/ModernMasterMind/tree/master/SC12 hier] voor meer informatie over de SC12 code.
+
+== Het interactieschema ==
+
+[[Image(hardware.png)]]
+
+== Flowcharts! ==
+
+Flowchart van de AVR:[[BR]]
+[[Image(AVRflowchart.png)]]
+
+Flowchart van de SC12:[[BR]]
+[[Image(SC12flowchart.png)]]
+
+Deze flowcharts zijn van de webserver:[[BR]]
+[[Image(WebserverP1.png)]] [[Image(WebserverP2.png)]]
+
+== Fotos ==
+
+Onbestukte PCBs[[BR]][[Image(pcbs.jpg, 600px)]]
+
+RIOT links, eigen PCB rechts[[BR]][[Image(boards.jpg, 600px)]]
+
+LEDs op panel print[[BR]][[Image(ledpanel.jpg, 600px)]]
+
+Voeding + LEDs op reel[[BR]][[Image(leds_psu.jpg, 600px)]]
+
+De LEDs als strip/scherm[[BR]][[Image(ledstrip.jpg, 600px)]]
+

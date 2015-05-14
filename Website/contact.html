@@ -46,48 +46,54 @@
     <title>Dries Kennes</title>
 
     <script type="text/javascript">
+        // <!--
         $(function ()
         {
             new Form("contact", "sillyQuestion");
         });
+        // -->
     </script>
 </head>
 <body>
 <div id="container">
+    <!-- Header -->
     <header>
         <a href="home2.html"><img src="assets/img/logo.png"/></a>
         <h1>ModernMasterMind</h1>
         <h2>De klassieker in een modern jasje</h2>
-        <ul id="menu"></ul>
+        <ul id="menu"></ul><!-- Done by JS -->
         <!-- Not on the contact page. <ul id="submenu"></ul> -->
     </header>
+    <!-- Content -->
     <div id="content" class="page">
         <p>Vragen of opmerkingen?</p>
         <form class="contact" id="contact" action="mailto:admin@dries007.net?subject=Contact+Projectsite+1" enctype="text/plain">
-            <table>
-                <tr>
+            <table><!-- Form in table for nice formatting -->
+                <tr><!-- Naam -->
                     <td><label for="name">Naam: </label></td>
                     <td class="expand"><input class="input" type="text" id="name" name="name" autofocus/></td>
                 </tr>
-                <tr>
+                <tr><!-- Email -->
                     <td><label for="email">Email: </label></td>
                     <td class="expand"><input class="input" type="email" id="email" name="email"/></td>
                 </tr>
-                <tr>
+                <tr><!-- Text -->
                     <td></td>
                     <td class="expand">
                         <textarea class="input" rows=10 id="text" name="text"></textarea>
                     </td>
                 </tr>
-                <tr>
+                <tr><!-- Anti robot -->
                     <td><label for="sillyQuestion"></label></td>
                     <td class="expand"><input class="input" type="number" id="sillyQuestion" name="sillyQuestion"/></td>
                 </tr>
             </table>
+            <!-- Controls underneath table -->
             <input class="btn" type="submit" value="Verzenden">
             <input class="btn" type="reset" value="Reset">
         </form>
     </div>
+    <!-- Footer -->
     <footer>
         <p>&copy;&nbsp;2015&nbsp;-
             <a href="http://dries007.net">Dries007.net</a>&nbsp;-

@@ -24,15 +24,18 @@
      OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
      SOFTWARE.
  */
-
+// <!--
 /**
  * Menu structure
+ * jQuery for the win!
  */
 $(function() {
     /** MAIN MENU */
     var list = $("header").find("#menu");
     if (list == null) return; // No menu
 
+    // Menu data
+    // Info about icons: http://fortawesome.github.io/Font-Awesome/icons/
     var pages = [
         {
             name: "Overzichtspagina",
@@ -61,15 +64,16 @@ $(function() {
         }
     ];
 
+    // Main menu tabs
     for (var i = 0; i < pages.length; i++)
     {
         var page = pages[i];
         var listItem = $("<li>");
         var link = $("<a>");
-        list.append(listItem.append(link));
+        list.append(listItem.append(link)); // Inception! (<a> in <li>)
 
         link.attr("href", page.link);
-        if (window.location.pathname.indexOf(page.link) != -1)
+        if (window.location.pathname.indexOf(page.link) != -1) // url contains page name => we are here.
         {
             listItem.addClass("active");
         }
@@ -77,62 +81,93 @@ $(function() {
         {
             listItem.addClass("inactive");
         }
-        if (typeof page.icon != "undefined")
+        if (typeof page.icon != "undefined") // icon present in data set
         {
-            var icon = $("<i>");
-            icon.addClass("fa").addClass("fa-" + page.icon).addClass("fa-lg");
-            link.append(icon, "&nbsp;&nbsp;");
+            var icon = $("<i>"); // FA uses <i> tags for there
+            icon.addClass("fa").addClass("fa-" + page.icon).addClass("fa-lg"); // class = "fa fa-ICON fa-lg"
+            link.append(icon, "&nbsp;&nbsp;"); // 2 non breaking spaces
         }
-        link.append($("<span>").text(page.name));
+        link.append($("<span>").text(page.name)); // text in span
     }
 
     /** SIDE MENU */
     var subElement = $("#submenu");
-    var subs = $("#content").find(".sub");
-    for (var i = 0; i < subs.length; i++)
+    if (subElement.size() != 0)// not always there
     {
-        var item = $("<li>" + subs[i].innerHTML + "</li>");
-        item.attr("for", subs[i].id);
-        if (subs[i].tagName.toLowerCase() == "h2") item.css("text-indent", "5px");
-        else if (subs[i].tagName.toLowerCase() == "h3") item.css("text-indent", "10px");
-        item.click(function () { window.location.hash = "#" + this.getAttribute("for"); });
-        subElement.append(item);
+        var subs = $("#content").find(".sub"); // helper class for this purpose
+        for (var i = 0; i < subs.length; i++)
+        {
+            var item = $("<li>" + subs[i].innerHTML + "</li>"); // use same text, but strip out outer tags
+            item.attr("for", subs[i].id); // set 'for' attribute, to keep the id handy
+            if (subs[i].tagName.toLowerCase() == "h2") item.css("text-indent", "5px"); // text indentation on the list item, dependant on the h level
+            else if (subs[i].tagName.toLowerCase() == "h3") item.css("text-indent", "10px");
+            else if (subs[i].tagName.toLowerCase() == "h4") item.css("text-indent", "15px");
+            item.click(function () // the onclick magic scrolling
+            {
+                // Use browser magic to scroll to page section, with the ID we saved earlier.
+                // Disadvantages: No smooth scrolling, clips the text right against the top of the content box.
+                window.location.hash = "#" + this.getAttribute("for");
+            });
+            subElement.append(item); // actually add the element
+        }
     }
 });
 
 /**
  * Dynamically add up to 150px padding to the #container element
  * Make the #content height perfect
+ *
+ * Look mom, no jQuery!
  */
 function setSizesAndPadding()
 {
-    var container = document.getElementById("container"); //$("#container");
-    if (container == null) return;
+    var container = document.getElementById("container");
+    if (container == null) return; // Not there on index page
 
-    var whitespace = window.innerWidth - container.offsetWidth; // $(window).width() - container.width();
+    //              browser screen width - css value for the #container element (even if overwritten anywhere else in css) ONLY WITH PIXELS, NOT PERCENTAGES!
+    var whitespace = window.innerWidth - window.getComputedStyle(container).getPropertyValue("width").replace("px", "");
 
+    // divide by 2 and make sure its maximum 150px
     whitespace = Math.floor(whitespace / 2);
     whitespace = Math.min(whitespace, 150);
 
     var submenu = document.getElementById("submenu");
-    if (submenu != null)
+    if (submenu != null) // not always there...
     {
-        if (whitespace != 150) submenu.style.display = "none";
-        else submenu.style.display = "inherit";
+        if (whitespace != 150) submenu.style.display = "none"; // hide, don't remove. Gets rechecked if page is resized
+        else submenu.style.display = "inherit"; // Show
     }
 
-    if (whitespace > 0) container.style.padding = "0 " + whitespace + "px";
+    if (whitespace > 0) container.style.padding = "0 " + whitespace + "px"; // add sidebar with responsive width to avoid useless scrollbars
     else container.style.padding = "0";
 
-    // - 10 to make up for BS inconsistencies in chrome (and/or others?)
+    // - 10 to make up for BS inconsistencies in chrome (and/or others?) that appear on page reload and other stuff
+    // sets the #content height to exactly match the browser height - (header and footer), since we want the footer to stick to the bottom
+    // Stops working when the browser height is too small for the header & footer
     document.getElementById("content").style.height = container.offsetHeight - document.getElementsByTagName("header")[0].offsetHeight - document.getElementsByTagName("footer")[0].offsetHeight - 10 + "px";
 }
 
 /**
- * Call the function on load and on window resize event
+ * To show that its possible without jQuery...
+ * Call the function on window resize event & on load
  */
-$(setSizesAndPadding);
-$(window).resize(setSizesAndPadding);
+function addEventHandler(elem, type, eventHandle)
+{
+    if (elem.addEventListener) //W3C DOM spec method
+    {
+        elem.addEventListener(type, eventHandle, false);
+    }
+    else if (elem.attachEvent) // IE < 11 bullshit
+    {
+        elem.attachEvent("on" + type, eventHandle);
+    }
+    else // Last resort!
+    {
+        elem["on"+type] = eventHandle;
+    }
+}
+addEventHandler(window, "resize", setSizesAndPadding); // on resize
+addEventHandler(window, "load", setSizesAndPadding); //on load
 
 /**
  * ========================================== FORM ==========================================
@@ -151,40 +186,43 @@ function Form(formId, sillyQuestionId)
     this.form = $("#" + formId);
     this.inputs = this.form.find(".input");
 
-    var me = this;
+    var me = this; // for later reference
 
-    this.form.submit(function (event)
+    this.form.submit(function (event) // on submit
     {
         var errors = false;
-        me.inputs.each(function (index, element)
+        me.inputs.each(function (index, element) // for each input field
         {
-            element = $(this);
+            element = $(this); // get the element as a jQuery object
 			
-			switch (element.attr("type"))
+			switch (element.attr("type")) // how to verify depends on the type
             {
-                case "numer":
+                case "numer":   // integer check, we don't need doubles
                     errors = setState(errors, element, parseInt(element.val()) === Number.NaN);
                     break;
-                case "email":
+                case "email":   // Über basic email check, a modern browser has a better one anyways
                     errors = setState(errors, element, element.val().indexOf('@') === -1);
                     break;
-                default:
+                default:        // For any other type, just make sure that there is something in there.
                     errors = setState(errors, element, element.val().trim().length === 0);
             }
-			
-			if (element.is(me.sillyQuestionElement)) 
+
+			if (element.is(me.sillyQuestionElement)) // if the current element is the sillyQuestionElement
 			{
+                // Check the answer AFTER the regular checks, because this one is more important
 				errors = setState(errors, element, parseInt(element.val()) !== me.answer);
 			}
         });
+        // prevent submit
         if (errors) event.preventDefault();
         return !errors;
     });
 
-    if (sillyQuestionId)
+    if (sillyQuestionId) // if there is a sillyQuestionId
     {
-        this.sillyQuestionElement = this.form.find("#" + sillyQuestionId);
+        this.sillyQuestionElement = this.form.find("#" + sillyQuestionId); // get and save the element
 
+        // Make up some math
         var i1 = 1 + Math.floor(Math.random() * 5);
         var i2 = 1 + Math.floor(Math.random() * 5);
 
@@ -218,7 +256,7 @@ function setState(errors, element, b)
  *  - 1 Title element in tag 'h1'
  *  - 1 Image element in tag 'img'
  *  - 1 I element with FontAwesome class "fa fa-pause"
- * The first title and image should be pre-loaded.
+ * ! The first title and image should be pre-loaded !
  *
  * @param elementId Id without #
  * @param titles Array of Strings
@@ -230,19 +268,22 @@ function setState(errors, element, b)
 function Slideshow(elementId, titles, images, intervalTime, fadeTime)
 {
     this.element = $("#" + elementId);
-    this.h1 = this.element.find("h1");
-    this.img = this.element.find("img");
-    this.control = this.element.find(".fa");
-    this.titles = titles;
-    this.images = images;
-    if (images.length != titles.length) console.log("Images and Titles of slideshow " + elementId + " have different lengths?")
+    this.h1 = this.element.find("h1"); // used as title
+    this.img = this.element.find("img"); // actual image
+    this.control = this.element.find(".fa"); // play/pause button
+    this.titles = titles; // data
+    this.images = images; // data
+    if (images.length != titles.length) // Sanity check
+    {
+        console.log("Images and Titles of slideshow " + elementId + " have different lengths?")
+    }
     this.count = images.length;
-    this.currentImage = 0;
+    this.currentImage = 0; // Start with 0 (pre loaded in the HTML)
     this.fadetime = fadeTime;
     this.intervalTime = intervalTime;
 
     var slideshow = this;
-    this.control.on("click", function(e)
+    this.control.on("click", function(e) // pause/play
     {
         slideshow.toggle();
     });
@@ -257,6 +298,9 @@ function Slideshow(elementId, titles, images, intervalTime, fadeTime)
 
     this.start();
 }
+
+// Uses prototypes here to avoid creating more then one instance of the functions.
+// Not really necessary, but better coding standard.
 
 /**
  * Function to start the slideshow
@@ -328,3 +372,4 @@ Slideshow.prototype.cycle = function ()
     slideshow.currentImage++;
     if (slideshow.currentImage == slideshow.count) slideshow.currentImage = 0;
 };
+// -->

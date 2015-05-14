@@ -36,8 +36,10 @@ body, input, textarea
 
 textarea
 {
-    resize: vertical;
+    resize: vertical; /* Vertical resize only */
 }
+
+/* Typography helper classes */
 
 p
 {
@@ -46,7 +48,7 @@ p
 
 h1, h2, h3
 {
-    padding-bottom: 14px;
+    padding-bottom: 14px; /* 1 regular line*/
 }
 
 h1
@@ -64,7 +66,9 @@ h3
     font-size: 1.5em;
 }
 
-img.small
+/* Image helper classes */
+
+img.small /* Logos & avatars images */
 {
     max-height: 100px;
     max-width: 100px;
@@ -115,6 +119,8 @@ img.small
     margin: 0 auto;
 }
 
+/* Misc helper classes */
+
 .btn
 {
     border-radius: 6px;
@@ -123,6 +129,11 @@ img.small
     color: #333;
     background-color: #fff;
     border: 1px solid #cccccc;
+    cursor: pointer;
+}
+
+#submenu li
+{
     cursor: pointer;
 }
 
@@ -152,10 +163,10 @@ table
 /* Structure parts
    --------------- */
 
-#container
+#container /* utmost outer block */
 {
     margin: 0 auto;
-    width: 1000px;
+    width: 1000px; /* MUST USE px FOR JS MAGIC */
     height: 100vh;
     background-image: url("../img/fp_bg.jpg");
 }
@@ -176,7 +187,7 @@ header
     position: relative;
 }
 
-#content.page
+#content.page /* if the container is a 'page' (aka not the index) */
 {
     background-color: #ffffff;
     box-shadow: 0 0 4px #a2a2a2;
@@ -196,7 +207,7 @@ footer
     text-align: center;
 }
 
-footer *
+footer * /* remove any and all padding on the bottom of the footer */
 {
     padding-bottom: 0;
 }
@@ -204,7 +215,7 @@ footer *
 /* Header elements
    --------------- */
 
-header img
+header img /* Logo */
 {
     float: left;
     width: 100px;
@@ -247,16 +258,17 @@ header #menu li
     margin: 0 10px;
 }
 
-header #menu li.active
+header #menu li.active /* to make it appear in front of the container.page's drop shadow */
 {
     z-index: 1;
 }
 
-header #menu li.inactive
+header #menu li.inactive /* bit of a gradient */
 {
     background-image: linear-gradient(to bottom, #ffffff, #dbdbdb);
 }
 
+/* Submenu is a white block that is floating off to the side, but its structure is within the header! */
 header #submenu {
     float: right;
     position: absolute;
@@ -281,8 +293,8 @@ header #submenu li {
 }
 
 /* Links
+    Yey for non ugly links!
    ----- */
-
 a:link
 {
     color: inherit;
@@ -307,13 +319,14 @@ a:active
     text-decoration: none;
 }
 
+/* Links in #content can be underlined */
 #content p a
 {
     text-decoration: underline;
 }
 
-/* Contact form
-   ------------ */
+/* Contact specific CSS
+   ================== */
 
 .contact table
 {
@@ -325,41 +338,33 @@ a:active
     padding-bottom: 1em;
 }
 
-.contact table td:first-child
+.contact table td:first-child /* the name column is 100px wide. */
 {
     width: 100px;
 }
 
-.contact label
+.contact label /* in case the first-child doesn't work */
 {
     padding-right: 1em;
 }
+
+/* Use input class so we can easily include text-areas*/
 
 .contact .input
 {
     border: 1px solid #ccc;
     border-radius: 6px;
     padding: .4em .6em;
-    transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+    transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s; /* Slower glow for nice effect */
     width: 100%;
     box-sizing: border-box;
 }
 
-.contact .input:focus
+.contact .input:focus /* Nice look, modeled after bootstrap */
 {
     outline: 0;
     box-shadow: 0 0 8px rgba(82,168,236,.6);
     border-color: rgba(82,168,236,.8);
-}
-
-.contact .input.verified
-{
-    border-color: #3c763d;
-}
-
-.contact .input.verified:focus
-{
-    box-shadow: 0 0 8px rgba(60, 118, 61, 0.64);
 }
 
 .contact .input.error
@@ -370,116 +375,6 @@ a:active
 .contact .input.error:focus
 {
     box-shadow: 0 0 8px rgba(169, 68, 66, 0.64);
-}
-
-/* Notebook Style
-   -------------- */
-
-/*noinspection CssOptimizeSimilarProperties*/
-.notebook
-{
-    position: absolute;
-    width: 400px;
-    box-shadow: inset 0 0 25px rgba(176, 45, 45, 0.2), 0 0 5px 0 #a2a2a2;;
-    padding-left: 2.8em;
-    padding-right: 1.6em;
-    background-image: url("../img/notebook.jpg");
-    background-size: 80em 1em;
-    background-repeat: repeat;
-}
-
-.notebook h1
-{
-    font-size: 1.5em;
-    padding-bottom: 0.35em;
-    padding-top: 0.65em;
-}
-
-/* Phone Style
-   ----------- */
-
-.phone
-{
-    position: absolute;
-    border-radius: 5px;
-    background-color: #000000;
-    box-shadow: 0 0 5px 0 #a2a2a2;
-    height: 300px;
-    width: 600px;
-    border: 4px solid gray;
-}
-
-.phone .fa
-{
-    position: absolute;
-    top: 130px;
-    left: 470px;
-    color: rgba(255, 255, 255, 0.30);
-    text-shadow: 0 0 4px #000000;
-    font-size: 20px;
-    cursor: pointer;
-}
-
-.phone h1
-{
-    position: absolute;
-    top: 15px;
-    color: #ffffff;
-    text-shadow: 0 0 4px #000000;
-    width: 100%;
-    text-align: center;
-    font-size: 1.5em;
-}
-
-.phone .img-container
-{
-    position: absolute;
-    top: 10px;
-    left: 40px;
-    height: 280px;
-    width: 500px;
-    border-radius: 5px;
-    background: #202020;
-}
-
-.phone img
-{
-    display: block;
-    margin: auto;
-    max-height: 100%;
-    max-width: 100%;
-    border-radius: 2px;
-}
-
-/* Sheet Style
-   ----------- */
-
-.sheet
-{
-    position: absolute;
-    background-color: #ffffff;
-    width: 800px;
-    height: 500px;
-    padding: 50px 75px;
-    box-shadow: 0 0 5px 0 #a2a2a2;
-}
-
-.sheet p
-{
-    padding-bottom: .5em;
-}
-
-.sheet h1
-{
-    font-size: 1.5em;
-    padding-bottom: 0.5em;
-}
-
-.sheet img
-{
-    max-height: 75%;
-    max-width: 100%;
-    padding: 25px 0;
 }
 
 /* Index specific CSS
@@ -522,7 +417,111 @@ a:active
     transform: rotate(1deg);
 }
 
-/* Other pages
-   =========== */
+/* Notebook Style (used on index)
+   ------------------------------ */
 
+/* noinspection CssOptimizeSimilarProperties */
+.notebook
+{
+    position: absolute;
+    width: 400px;
+    box-shadow: inset 0 0 25px rgba(176, 45, 45, 0.2), 0 0 5px 0 #a2a2a2;;
+    padding-left: 2.8em; /* left notebook margin, fitted to image */
+    padding-right: 1.6em; /* right notebook margin, eyeballed */
+    background-image: url("../img/notebook.jpg"); /* One line out of a notebook, that is really wide */
+    background-size: 80em 1em; /* To fit image */
+    background-repeat: repeat; /* To fit image */
+}
 
+.notebook h1
+{
+    padding-top: 0.60em; /* Line up bottom of this title with notebook lines */
+    padding-bottom: 0.42em; /* Lines up bottom of next paragraph with notebook lines */
+}
+
+/* Phone Style (used on index)
+   --------------------------- */
+
+.phone /* dimensions are proportional to a OnePlus One, and so are the looks :) */
+{
+    position: absolute;
+    border-radius: 5px;
+    background-color: #000000;
+    box-shadow: 0 0 5px 0 #a2a2a2;
+    height: 300px;
+    width: 600px;
+    border: 4px solid gray;
+}
+
+.phone .fa /* play/pause icon */
+{
+    position: absolute;
+    top: 130px;
+    left: 470px;
+    color: rgba(255, 255, 255, 0.30);
+    text-shadow: 0 0 4px #000000;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.phone h1 /* name/title of the picture */
+{
+    position: absolute;
+    top: 15px;
+    color: #ffffff;
+    text-shadow: 0 0 4px #000000;
+    width: 100%;
+    text-align: center;
+    font-size: 1.5em;
+}
+
+.phone .img-container /* the image container aka screen of the phone */
+{
+    position: absolute;
+    top: 10px;
+    left: 40px;
+    height: 280px;
+    width: 500px;
+    border-radius: 5px;
+    background: #202020;
+}
+
+.phone img /* actual image is centered*/
+{
+    display: block;
+    margin: auto;
+    max-height: 100%;
+    max-width: 100%;
+    border-radius: 2px;
+}
+
+/* Sheet Style (used on index)
+   --------------------------- */
+
+.sheet
+{
+    position: absolute;
+    background-color: #ffffff;
+    width: 800px;
+    height: 500px;
+    padding: 50px 75px;
+    box-shadow: 0 0 5px 0 #a2a2a2;
+}
+
+.sheet p /* Waist less space on text */
+{
+    padding-bottom: .5em;
+}
+
+.sheet h1 /* Waist less space on text */
+{
+    font-size: 1.5em;
+    padding-bottom: 0.5em;
+}
+
+.sheet img /* use most of the available space here */
+{
+    max-height: 75%;
+    max-width: 100%;
+    padding: 25px 0;
+}
