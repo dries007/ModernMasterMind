@@ -94,43 +94,92 @@ void printAllUsers()
  *                      LEDS RELATED
  *************************************************************/
 
+address sendProper(byte row, address addr)
+{
+    for (byte p = 0; p < COLORS; p++)
+    {
+        RGB rgb = ALL_COLORS[game.guesses[row][p]];
+        writeDatabus(addr++, rgb.r);
+        writeDatabus(addr++, rgb.g);
+        writeDatabus(addr++, rgb.b);
+    }
+
+    byte g = game.guesses[row][COLORS];
+    byte r = game.guesses[row][COLORS + 1];
+
+    if (g + r > COLORS) printf("BUG!! r + g > COLORS with r = %d; g = %d; COLORS = %d\n", r, g, COLORS);
+
+    for (byte p = 0; p < g; p++)
+    {
+        writeDatabus(addr++, GREEN.r);
+        writeDatabus(addr++, GREEN.g);
+        writeDatabus(addr++, GREEN.b);
+    }
+
+    for (byte p = 0; p < r; p++)
+    {
+        writeDatabus(addr++, ORANGE.r);
+        writeDatabus(addr++, ORANGE.g);
+        writeDatabus(addr++, ORANGE.b);
+    }
+
+    for (byte p = g + r; p < COLORS; p++)
+    {
+        writeDatabus(addr++, BLACK.r);
+        writeDatabus(addr++, BLACK.g);
+        writeDatabus(addr++, BLACK.b);
+    }
+
+    return addr;
+}
+
+address sendReverse(byte row, address addr)
+{
+    byte g = game.guesses[row][COLORS];
+    byte r = game.guesses[row][COLORS + 1];
+
+    if (g + r > COLORS) printf("BUG!! r + g > COLORS with r = %d; g = %d; COLORS = %d\n", r, g, COLORS);
+
+    for (byte p = g + r; p < COLORS; p++)
+    {
+        writeDatabus(addr++, BLACK.r);
+        writeDatabus(addr++, BLACK.g);
+        writeDatabus(addr++, BLACK.b);
+    }
+
+    for (byte p = 0; p < r; p++)
+    {
+        writeDatabus(addr++, ORANGE.r);
+        writeDatabus(addr++, ORANGE.g);
+        writeDatabus(addr++, ORANGE.b);
+    }
+
+    for (byte p = 0; p < g; p++)
+    {
+        writeDatabus(addr++, GREEN.r);
+        writeDatabus(addr++, GREEN.g);
+        writeDatabus(addr++, GREEN.b);
+    }
+
+    for (byte p = 0; p < COLORS; p++)
+    {
+        RGB rgb = ALL_COLORS[game.guesses[row][COLORS - 1 - p]];
+        writeDatabus(addr++, rgb.r);
+        writeDatabus(addr++, rgb.g);
+        writeDatabus(addr++, rgb.b);
+    }
+
+    return addr;
+}
+
 void sendLEDS()
 {
     address addr = RAM_LEDS_START;
-    for (byte r = 0; r < ROWS; r++)
+    byte row = 0;
+    while (row < ROWS)
     {
-        for (byte p = 0; p < COLORS; p++)
-        {
-            RGB rgb = ALL_COLORS[game.guesses[r][p]];
-            writeDatabus(addr++, rgb.r);
-            writeDatabus(addr++, rgb.g);
-            writeDatabus(addr++, rgb.b);
-        }
-        byte g = game.guesses[r][COLORS];
-        byte r = game.guesses[r][COLORS + 1];
-
-        if (g + r > COLORS) printf("BUG!! r + g > COLORS with r = %d; g = %d; COLORS = %d\n", r, g, COLORS);
-
-        for (byte p = 0; p < g; p++)
-        {
-            writeDatabus(addr++, GREEN.r);
-            writeDatabus(addr++, GREEN.g);
-            writeDatabus(addr++, GREEN.b);
-        }
-
-        for (byte p = 0; p < r; p++)
-        {
-            writeDatabus(addr++, ORANGE.r);
-            writeDatabus(addr++, ORANGE.g);
-            writeDatabus(addr++, ORANGE.b);
-        }
-
-        for (byte p = g + r; p < COLORS; p++)
-        {
-            writeDatabus(addr++, BLACK.r);
-            writeDatabus(addr++, BLACK.g);
-            writeDatabus(addr++, BLACK.b);
-        }
+        addr = sendProper(row++, addr);
+        addr = sendReverse(row++, addr);
     }
     writeDatabus(RAM_INT_SEND, CMD_LEDS_SEND);
 }
@@ -150,10 +199,12 @@ void resetGame()
     game.nrOfGuesses = 0;
     for (int i = 0; i < ROWS; i++)
     {
-        for (int j = 0; j < COLORS + 2; j++)
+        for (int j = 0; j < COLORS; j++)
         {
             game.guesses[i][j] = 9; // 9 = black
         }
+        game.guesses[i][COLORS] = 0;
+        game.guesses[i][COLORS + 1] = 0;
     }
     sendLEDS();
 }
@@ -169,19 +220,33 @@ void setRndCode(byte colors)
 
 void guessRow(byte id)
 {
+    if (id >= ROWS)
+    {
+        game.state = STATE_GAME_OVER;
+        return;
+    }
+    byte usedUpPins[COLORS];
+    for (byte i = 0; i < COLORS; i++) usedUpPins[i] = 0;
+
     for (byte i = 0; i < COLORS; i++)
     {
+        // Exact matches
         if (game.guesses[id][i] == game.code[i])
         {
+            usedUpPins[i] = 1;
             game.guesses[id][COLORS] ++;
+            if (game.guesses[id][COLORS] == COLORS)
+            {
+                game.state = STATE_GAME_WON;
+            }
         }
         else
         {
-             // + 1 because we know i doesn't match
-            for (byte j = i + 1; j < COLORS; j++)
+            for (byte j = 0; j < COLORS; j++)
             {
-                if (game.guesses[id][i] == game.code[j])
+                if (game.guesses[id][i] == game.code[j] && usedUpPins[j] == 0)
                 {
+                    usedUpPins[j] = 1;
                     game.guesses[id][COLORS + 1] ++;
                     break;
                 }
@@ -342,70 +407,37 @@ void endProgram()
 void test()
 {
     writeDatabus(RAM_LEDS_DIM, 0xFF);
-    writeDatabus(RAM_LEDS_AMOUNT, 30);
+    writeDatabus(RAM_LEDS_AMOUNT, 100);
 
     address addr = RAM_LEDS_START;
     for (byte r = 0; r < ROWS; r++)
     {
-        for (byte p = 0; p < COLORS; p++)
+        for (byte p = 0; p < COLORS * 2; p++)
         {
             RGB rgb = ALL_COLORS[rand() % MAX_COLORS];
             writeDatabus(addr++, rgb.r);
             writeDatabus(addr++, rgb.g);
             writeDatabus(addr++, rgb.b);
         }
-
-        byte g = 1;
-        byte r = 1;
-
-        if (g + r > COLORS) printf("BUG!! r + g > COLORS with r = %d; g = %d; COLORS = %d\n", r, g, COLORS);
-
-        for (byte p = 0; p < g; p++)
-        {
-            writeDatabus(addr++, GREEN.r);
-            writeDatabus(addr++, GREEN.g);
-            writeDatabus(addr++, GREEN.b);
-        }
-
-        for (byte p = 0; p < r; p++)
-        {
-            writeDatabus(addr++, ORANGE.r);
-            writeDatabus(addr++, ORANGE.g);
-            writeDatabus(addr++, ORANGE.b);
-        }
-
-        for (byte p = g + r; p < COLORS; p++)
-        {
-            writeDatabus(addr++, BLACK.r);
-            writeDatabus(addr++, BLACK.g);
-            writeDatabus(addr++, BLACK.b);
-        }
     }
     writeDatabus(RAM_INT_SEND, CMD_LEDS_SEND);
     delay(1000);
-
-    /*
-    byte buffer[] = "TEST LCD";
-    for (address i = 0; i < strlen(buffer) + 1; i++)
-    {
-       writeDatabus(i + RAM_LCD_START, buffer[i]);
-    }
-    writeDatabus(RAM_INT_SEND, CMD_LCD_CHAR);
-    */
-
-    setLCDLine(0, "TEST Line 0"); delay(100);
-    setLCDLine(1, "TEST Line 1"); delay(100);
-    setLCDLine(2, "TEST Line 2"); delay(100);
-    setLCDLine(3, "TEST Line 3"); delay(100);
 }
 
-byte intByte = 0x00;
-
-void huge _pascal _saveregs int0handler() // Declare this function as an ISR!
+void debugGameState()
 {
-    intByte = readDatabus(RAM_INT_GET); // read location 1fe and reset int condition
-    // Give specific int0 EOI to the PIC (SC12 i/o base address ff00h) see 80186 USERS MAN.
-    //outport (0xff22, INTR0);
+    printf("\nGame state: %d\nGame VS player: %d\nGame host: %s\n# colors: %d\nCode: ", game.state, game.vsPlayer, game.host->name, game.colors);
+    for (byte i = 0; i < COLORS; i++) printf("%s ", ALL_COLOR_CLASSES[game.code[i]]);
+    printf("\n# of guesses: %d\nGuesses Table:\n", game.nrOfGuesses);
+    for (byte r = 0; r < ROWS; r++)
+    {
+        printf("Guess #%d: ", r);
+        for (byte c = 0; c < COLORS; c++) printf("%10s ", ALL_COLOR_CLASSES[game.guesses[r][c]]);
+        printf(" Exact: %d Color: %d\n", game.guesses[r][COLORS], game.guesses[r][COLORS + 1]);
+    }
+    printf("Code: ");
+    for (byte c = 0; c < COLORS; c++) printf("%10s ", ALL_COLOR_CLASSES[game.code[c]]);
+    printf("\n\n");
 }
 
 void main()
@@ -420,6 +452,9 @@ void main()
 
     writeDatabus(RAM_INT_SEND, CMD_LCD_BL_ON);
 
+    writeDatabus(RAM_LEDS_DIM, 0xFF);
+    writeDatabus(RAM_LEDS_AMOUNT, ROWS * 2 * COLORS);
+
     writeDatabus(RAM_LCD_CMD, 0x0C); // Blink off
     writeDatabus(RAM_INT_SEND, CMD_LCD_CMD);
 
@@ -428,13 +463,6 @@ void main()
     printf("\n\nAVR firmware version id: %d 0x%02x\n\n\n", readDatabus(RAM_VERSION_1), readDatabus(RAM_VERSION_2));
     setLCDLine(0, "MMM by Dries007");
     setLCDLine(1, "Booting...");
-
-    // Setup AVR for LCD
-    //initLcd();
-
-    // Print firmware info to LCD
-    //setLCDLineFormat(0, "(C) Dries007 '%s", CYEAR);
-    //setLCDLineFormat(1, "Version %s.%d", VERSION, readDatabus(ADDRESS_FW_VER));
 
     // Ethernet connection check
     if (BIOS_Ethernet_State(NULL, NULL))
@@ -457,10 +485,6 @@ void main()
         endProgram();
     }
 
-    // Do time setup
-    // printf("Fetching time...\n");
-    // initTime();
-
     /**
      * CGI methods
      */
@@ -468,9 +492,8 @@ void main()
     printf("Installing CGI methods\n");
     installCGIMethods();
 
-    //pfe_enable_int(0);
-    //pfe_set_edge_level_intr_mode(0, 0);
-    //hal_install_isr(0, 1, &int0handler);
+    printf("Reset Game status\n");
+    resetGame();
 
     /*
      * MENU
@@ -484,13 +507,11 @@ void main()
         printf("[R] Reboot\n");
         printf("[D] Debug RAM Dump\n");
         printf("[S] Set RAM manually\n");
-        // printf("[T] Redo time update\n");
+        printf("[G] Debug Game State\n");
         printf("[U] Print all known users\n");
         printf("[I] Interrupt test to AVR\n");
 
         scanf("%c%*c", &key);
-
-        printf("IntByte: 0x%02x Real: 0x%02x\n", intByte, readDatabus(RAM_INT_GET));
 
         switch (key & ~0x20)
         {
@@ -506,9 +527,9 @@ void main()
         case 'S':
             manualram();
             break;
-//        case 'T':
-//            initTime();
-//            break;
+        case 'G':
+            debugGameState();
+            break;
         case 'U':
             printAllUsers();
             break;
@@ -529,7 +550,7 @@ void main()
  *                      TEMPLATE PARTS
  *************************************************************/
 
-char * pageHeader = "<!doctype html><html><head><meta charset='us-ascii'/><meta name='viewport' content='width=400' /><title>Mastermind</title><link href='http://fonts.googleapis.com/css?family=Open+Sans:600,400' rel='stylesheet' type='text/css'><link href='style.css' rel='stylesheet'/></head><body><div id='wrapper'>";
+char * pageHeader = "<!doctype html><html><head><meta charset='us-ascii'/><meta name='viewport' content='width=400' /><title>Mastermind</title><link href='http://fonts.googleapis.com/css?family=Open+Sans:600,400' rel='stylesheet' type='text/css'><style type='text/css'>body,html{font-family:'Open Sans',sans-serif;margin:0 auto;padding:0;height:100%%;min-height:100%%;position:relative;max-width:500px}#wrapper{padding:10px 10px 30px}.center{text-align:center}.black{background-color:#000;color:#fff}.white{background-color:#fff}.orange{background-color:orange}.purple{background-color:purple;color:#fff}.yellow{background-color:#ff0}.aqua{background-color:#0ff}.pink{background-color:#ff1493}.blue{background-color:#00f;color:#fff}.green{background-color:green;color:#fff}.red{background-color:red}header h1{margin:1px}header ul{margin:1px;padding:1px}header ul li{display:inline;padding:0 10px;margin:1px;border:1px solid #000;border-radius:5px;box-shadow:2px 2px 3px #888}header ul li a{text-decoration:none;color:#000}.guesses{width:100%%;text-align:center;;border-collapse:collapse}.guesses .txt{padding:0 10px}.guesses * tr td{border:1px solid #000}footer{position:absolute;bottom:0;height:30px;padding:0 10px}footer a{text-decoration:none;color:#d3d3d3;font-size:smaller}input[type=submit], .btn{display:inline;padding:3px 10px;margin:1px;border:1px solid #000;border-radius:5px;box-shadow:2px 2px 3px #888;background:#fff;text-decoration:none;color:#000}</style></head><body><div id='wrapper'>";
 char * pageFooter = "</div><footer><a class='center' href='http://www.dries007.net/'>&copy; Dries007.net - 2015</a></footer></body></html>";
 char * pickUsername = "<h2>Welcome new player!</h2><p>Before you can play, you need to pick a username:</p><form method='post' action='pickUsername'><input type='text' name='username' maxlength='20'/><input type='submit' value='Check'/></form>";
 char * noGameYet = "<p>No game is going yet, but you can start one!</p>";
@@ -774,19 +795,22 @@ void huge _pascal _saveregs cgiPlayFunction(rpCgiPtr CgiRequest)
     {
         addMenuItems(pageBuffer, 0);
 
-        // Process guess, if any
-        char * name;
-        char * value;
-        byte i = 0xFF;
-        while (CGI_GetArgument(&name, &value, CgiRequest) == CGI_ARGUMENT_ERR_OK)
+        if (game->state == STATE_GAME_STARTED)
         {
-            int p, c; //p = position, c = color id
-            sscanf(name, "c%d", &p);
-            c = atoi(value);
-            if (i == 0xFF) i = game->nrOfGuesses++;
-            game->guesses[i][p] = c;
+            // Process guess, if any
+            char * name;
+            char * value;
+            byte i = 0xFF;
+            while (CGI_GetArgument(&name, &value, CgiRequest) == CGI_ARGUMENT_ERR_OK)
+            {
+                int p, c; //p = position, c = color id
+                sscanf(name, "c%d", &p);
+                c = atoi(value);
+                if (i == 0xFF) i = game->nrOfGuesses++;
+                game->guesses[i][p] = c;
+            }
+            if (i != 0xFF) guessRow(i);
         }
-        if (i != 0xFF) guessRow(i);
 
         // Display guess table
 
@@ -811,43 +835,40 @@ void huge _pascal _saveregs cgiPlayFunction(rpCgiPtr CgiRequest)
 
         strcat(pageBuffer, "</table>");
 
-        // Let user make guess
-        if (game->vsPlayer && game->host == user)
+        if (game->state == STATE_GAME_OVER)
+        {
+            strcat(pageBuffer, "<p>Game over! The host/computer won!</p><a href='reset' class='btn'>Reset</a>");
+        }
+        else if (game->state == STATE_GAME_WON)
+        {
+            strcat(pageBuffer, "<p>Game over! The codebreaker(s) won!</p><a href='reset' class='btn'>Reset</a>");
+        }
+        else if (game->vsPlayer && game->host == user)
         {
             strcat(pageBuffer, "<p>You picked the code, you can't guess.</p>");
         }
+        else if (game->state == STATE_GAME_STARTED) // Let user make guess
+        {
+            strcat(pageBuffer, "<p>Make a guess:</p><form method='get' action='play'>");
+            for (byte i = 0; i < COLORS; i++) // Color picker 1 -> 4
+            {
+                sprintf(tmpBuffer, "<select name='c%d'>", i);
+                strcat(pageBuffer, tmpBuffer);
+
+                for (byte c = 0; c < game->colors; c++)
+                {
+                    byte selected = game->nrOfGuesses != 0 && game->guesses[game->nrOfGuesses - 1][i] == c;
+                    sprintf(tmpBuffer, "<option value='%d' class='%s' %s >%s</option>", c, ALL_COLOR_CLASSES[c], selected ? "selected" : "", ALL_COLOR_CLASSES[c]);
+                    strcat(pageBuffer, tmpBuffer);
+                }
+
+                strcat(pageBuffer, "</select>");
+            }
+            strcat(pageBuffer, "<input type='submit' value='Choose!'/></form>");
+        }
         else
         {
-            if (game->state == STATE_GAME_STARTED)
-            {
-                strcat(pageBuffer, "<p>Make a guess:</p><form method='get' action='play'>");
-                for (byte i = 0; i < 4; i++) // Color picker 1 -> 4
-                {
-                    sprintf(tmpBuffer, "<select name='c%d'>", i);
-                    strcat(pageBuffer, tmpBuffer);
-
-                    for (byte c = 0; c < game->colors; c++)
-                    {
-                        sprintf(tmpBuffer, "<option value='%d' class='%s'>%s</option>", c, ALL_COLOR_CLASSES[c], ALL_COLOR_CLASSES[c]);
-                        strcat(pageBuffer, tmpBuffer);
-                    }
-
-                    strcat(pageBuffer, "</select>");
-                }
-                strcat(pageBuffer, "<input type='submit' value='Choose!'/></form>");
-            }
-            else if (game->state == STATE_GAME_OVER)
-            {
-                strcat(pageBuffer, "<p>Game over! The host won!</p>");
-            }
-            else if (game->state == STATE_GAME_WON)
-            {
-                strcat(pageBuffer, "<p>Game over! The codebreakers won!</p>");
-            }
-            else
-            {
-                strcat(pageBuffer, "<p>Incorrect game state.</p>");
-            }
+            strcat(pageBuffer, "<p>Code is not yet picked. Refresh the page to get a status update.</p>");
         }
     }
     strcat(pageBuffer, pageFooter);
@@ -858,6 +879,44 @@ void huge _pascal _saveregs cgiPlayFunction(rpCgiPtr CgiRequest)
     CgiRequest->fResponseBufferLength = strlen(pageBuffer);
 }
 
+/*************************************************************
+ *                      RESET (GET)
+ *************************************************************/
+
+void huge _pascal _saveregs cgiResetFunction(rpCgiPtr CgiRequest)
+{
+    static char pageBuffer[2048];  // Buffer to contain web page
+    char tmpBuffer[512]; // Buffer for string manipulation functions
+
+    sprintf(pageBuffer, pageHeader);
+
+    User * user = getUserByIP(CgiRequest->fRemoteIPPtr);
+    Game * game = getGame();
+
+    if (user == NULL)
+    {
+        addMenuItems(pageBuffer, 0);
+        strcat(pageBuffer, pickUsername);
+    }
+    else if (game->state == STATE_GAME_OVER || game->state == STATE_GAME_WON) // If game done
+    {
+        resetGame();
+
+        addMenuItems(pageBuffer, 1, "start", "Start a game");
+        strcat(pageBuffer, "<p>The game has been reset.</p>");
+    }
+    else
+    {
+        strcat(pageBuffer, "<p>Incorrect game state.</p>");
+    }
+
+    strcat(pageBuffer, pageFooter);
+
+    CgiRequest->fHttpResponse = CgiHttpOk;
+    CgiRequest->fDataType = CGIDataTypeHtml;
+    CgiRequest->fResponseBufferPtr = pageBuffer;
+    CgiRequest->fResponseBufferLength = strlen(pageBuffer);
+}
 
 /*************************************************************
  *                  ALL INSTALL / REMOVE LOGIC
@@ -865,16 +924,15 @@ void huge _pascal _saveregs cgiPlayFunction(rpCgiPtr CgiRequest)
 
 typedef void huge _pascal _saveregs (*CGIfn)(rpCgiPtr); // Because function pointer syntax in unreadable
 
-char *cgiNames[] =      {/*"clock",*/           "home",          "pickUsername",            "start",            "play"};
-int cgiMethods[] =      {/*CgiHttpGet,*/        CgiHttpGet,      CgiHttpPost,               CgiHttpGet,         CgiHttpGet };
-CGIfn cgiFunctions[] =  {/*cgiClockFunction,*/  cgiHomeFunction, cgiPickUsernameFunction,   cgiStartFunction,   cgiPlayFunction};
+char *cgiNames[] =      {"home",          "pickUsername",            "start",            "play",             "reset"};
+int cgiMethods[] =      {CgiHttpGet,      CgiHttpPost,               CgiHttpGet,         CgiHttpGet,         CgiHttpGet};
+CGIfn cgiFunctions[] =  {cgiHomeFunction, cgiPickUsernameFunction,   cgiStartFunction,   cgiPlayFunction,    cgiResetFunction};
 
 void installCGIMethods()
 {
     CGI_Entry cgiEntry;
 
-    byte n = sizeof(cgiMethods) / sizeof(int);
-    for (byte i = 0; i < n; i++)
+    for (byte i = 0; i < 5; i++)
     {
         cgiEntry.PathPtr = cgiNames[i];
         cgiEntry.CgiFuncPtr = cgiFunctions[i];

@@ -199,12 +199,13 @@ int main()
 {
 	inits(); // set ports & interrupt registers
 	
+	#if DEBUG
 	// debounce variables
 	uint8_t prevKey = 0x00;
 	uint16_t downTime = 0;
 	uint16_t upTime = 0;
 	
-	while (1) // main program loop (aka keypad scanner)
+	while (1) // debug program loop (aka keypad scanner)
 	{
 		for (uint8_t r = 0; r < 4; r++) // ROW loop
 		{
@@ -227,9 +228,7 @@ int main()
 					WRITE_RAM(RAM_KP_LASTKEY, key); // Store key in DPRAM for SC12
 					WRITE_RAM(RAM_INT_SEND, SATUS_KP_PRESS); // Send interrupt to SC12
 					
-					#if DEBUG
 					debugKeypress(key);
-					#endif
 					
 					prevKey = key; // Store current key for debounce
 					
@@ -241,6 +240,12 @@ int main()
 			_delay_ms(1);
 		}
 	}
+	#else 
+	while (1)
+	{
+		
+	}
+	#endif
 }
 
 /* ================ FUNCTIONS =============== */

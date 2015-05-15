@@ -57,8 +57,8 @@
 
 #define TCPIP_int 0xAC
 
-#define LCD_LINE_SIZE 20
-#define LCD_LINES 4
+#define LCD_LINE_SIZE 16
+#define LCD_LINES 2
 
 #define MAX_COLORS 10
 #define COLORS 4
@@ -117,8 +117,6 @@ typedef struct
 {
     unsigned long ip;
     char name[21];
-    byte function;
-    byte score;
 } User;
 
 typedef struct
