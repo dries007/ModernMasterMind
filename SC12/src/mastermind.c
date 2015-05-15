@@ -233,6 +233,11 @@ void guessRow(byte id)
         // Exact matches
         if (game.guesses[id][i] == game.code[i])
         {
+            if (usedUpPins[i] == 1)
+            {
+                game.guesses[id][COLORS + 1] --;
+            }
+
             usedUpPins[i] = 1;
             game.guesses[id][COLORS] ++;
             if (game.guesses[id][COLORS] == COLORS)
