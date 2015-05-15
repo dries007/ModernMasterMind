@@ -118,9 +118,9 @@ address sendProper(byte row, address addr)
 
     for (byte p = 0; p < r; p++)
     {
-        writeDatabus(addr++, ORANGE.r);
-        writeDatabus(addr++, ORANGE.g);
-        writeDatabus(addr++, ORANGE.b);
+        writeDatabus(addr++, YELLOW.r);
+        writeDatabus(addr++, YELLOW.g);
+        writeDatabus(addr++, YELLOW.b);
     }
 
     for (byte p = g + r; p < COLORS; p++)
@@ -149,9 +149,9 @@ address sendReverse(byte row, address addr)
 
     for (byte p = 0; p < r; p++)
     {
-        writeDatabus(addr++, ORANGE.r);
-        writeDatabus(addr++, ORANGE.g);
-        writeDatabus(addr++, ORANGE.b);
+        writeDatabus(addr++, YELLOW.r);
+        writeDatabus(addr++, YELLOW.g);
+        writeDatabus(addr++, YELLOW.b);
     }
 
     for (byte p = 0; p < g; p++)
@@ -474,6 +474,12 @@ void main()
     {
         setLCDLine(0, "ERROR");
         setLCDLine(1, "NO ETHERNET!");
+
+        while (1)
+        {
+            test();
+        }
+
         return;
     }
 
@@ -755,7 +761,7 @@ void huge _pascal _saveregs cgiStartFunction(rpCgiPtr CgiRequest)
         else // New game form
         {
             addMenuItems(pageBuffer, 0);
-            strcat(pageBuffer, "<h2>Start a new game</h2><form method='get' action='start'><p> Player(s) VS <label><input type='radio' name='mode' value='Player' checked/> Host</label><label><input type='radio' name='mode' value='Computer'/> Computer</label></p><p><label for='colors'># of colors: </label><select id='colors' name='colors'><option>4</option><option>6</option><option>8</option><option>10</option></select></p><input type='submit' value='Go!'/></form>");
+            strcat(pageBuffer, "<h2>Start a new game</h2><form method='get' action='start'><p> Player(s) VS <label><input type='radio' name='mode' value='Player' checked/> Host</label><label><input type='radio' name='mode' value='Computer'/> Computer</label></p><p><label for='colors'># of colors: </label><select id='colors' name='colors'><option>4</option><option>6</option><option>8</option></select></p><input type='submit' value='Go!'/></form>");
         }
     }
     else // Already going

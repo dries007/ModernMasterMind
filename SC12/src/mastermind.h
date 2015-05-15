@@ -60,7 +60,7 @@
 #define LCD_LINE_SIZE 16
 #define LCD_LINES 2
 
-#define MAX_COLORS 10
+#define MAX_COLORS 8
 #define COLORS 4
 #define ROWS 12
 
@@ -185,9 +185,8 @@ const RGB YELLOW = {255, 255, 0};
 const RGB PURPLE = {130, 0, 255};
 const RGB ORANGE = {255, 130, 0};
 
-//                                      RED         GREEN       BLUE        PINK            AQUA            YELLOW      PURPLE          ORANGE          WHITE           BLACK
-const RGB ALL_COLORS[MAX_COLORS] = {{255, 0, 0}, {0, 255, 0}, {0, 0, 255}, {255, 0, 255}, {0, 255, 255}, {255, 255, 0}, {130, 0, 255}, {255, 130, 0}, {255, 255, 255}, {0, 0, 0}};
-const char * ALL_COLOR_CLASSES[MAX_COLORS] = {"red", "green", "blue", "pink", "aqua", "yellow", "purple", "orange", "white", "black"};
+const RGB ALL_COLORS[10] =              {{255, 0, 0},   {0, 255, 0},    {0, 0, 255},    {255, 0, 255},  {0, 255, 200},  {255, 255, 0},  {255, 255, 255},    {255, 80, 0},   {0, 0, 0}};
+const char * ALL_COLOR_CLASSES[10] =    {"red",         "green",        "blue",         "pink",         "aqua",         "yellow",       "white",            "orange",       "black"};
 
 union REGS inregs;
 union REGS outregs;
