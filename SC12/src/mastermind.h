@@ -1,28 +1,28 @@
 /*
-    The MIT License (MIT)
+ The MIT License (MIT)
 
-    Copyright (c) 2015 Dries007
+ Copyright (c) 2015 Dries007
 
-    Made for/in relation to an education at Thomas More Mechelen-Antwerpen vzw
-    Campus De Nayer - Professionele bachelor elektronica-ict
+ Made for/in relation to an education at Thomas More Mechelen-Antwerpen vzw
+ Campus De Nayer - Professionele bachelor elektronica-ict
 
-    Permission is hereby granted, free of charge, to any person obtaining a copy
-    of this software and associated documentation files (the "Software"), to deal
-    in the Software without restriction, including without limitation the rights
-    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-    copies of the Software, and to permit persons to whom the Software is
-    furnished to do so, subject to the following conditions:
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
 
-    The above copyright notice and this permission notice shall be included in all
-    copies or substantial portions of the Software.
+ The above copyright notice and this permission notice shall be included in all
+ copies or substantial portions of the Software.
 
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-    SOFTWARE.
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ SOFTWARE.
  */
 
 #ifndef SRC_MASTERMIND_H_
@@ -115,31 +115,32 @@ typedef unsigned short address;
 
 typedef struct
 {
-    unsigned long ip;
-    char name[21];
+  unsigned long ip;
+  char name[21];
 } User;
 
 typedef struct
 {
-    byte r;
-    byte g;
-    byte b;
+  byte r;
+  byte g;
+  byte b;
 } RGB;
 
-typedef struct {
-    byte state;
-    byte vsPlayer;
-    User * host;
-    byte colors;
-    byte code[COLORS];
-    byte nrOfGuesses;
-    byte guesses[ROWS][COLORS + 2];
+typedef struct
+{
+  byte state;
+  byte vsPlayer;
+  User * host;
+  byte colors;
+  byte code[COLORS];
+  byte nrOfGuesses;
+  byte guesses[ROWS][COLORS + 2];
 } Game;
 
 struct userlist_el
 {
-   User user;
-   struct userlist_el * next;
+  User user;
+  struct userlist_el * next;
 };
 
 /* ================================================== METHODS ==================================================*/
@@ -171,22 +172,25 @@ void printAllUsers();
 
 /* ================================================== GLOBALS ==================================================*/
 
-const RGB BLACK = {0, 0, 0};
-const RGB WHITE = {255, 255, 255};
+const RGB BLACK = { 0, 0, 0 };
+const RGB WHITE = { 255, 255, 255 };
 
-const RGB RED = {255, 0, 0};
-const RGB GREEN = {0, 255, 0};
-const RGB BLUE = {0, 0, 255};
+const RGB RED = { 255, 0, 0 };
+const RGB GREEN = { 0, 255, 0 };
+const RGB BLUE = { 0, 0, 255 };
 
-const RGB PINK = {255, 0, 255};
-const RGB AQUA = {0, 255, 255};
-const RGB YELLOW = {255, 255, 0};
+const RGB PINK = { 255, 0, 255 };
+const RGB AQUA = { 0, 255, 255 };
+const RGB YELLOW = { 255, 255, 0 };
 
-const RGB PURPLE = {130, 0, 255};
-const RGB ORANGE = {255, 130, 0};
+const RGB PURPLE = { 130, 0, 255 };
+const RGB ORANGE = { 255, 130, 0 };
 
-const RGB ALL_COLORS[10] =              {{255, 0, 0},   {0, 255, 0},    {0, 0, 255},    {255, 0, 255},  {0, 255, 200},  {255, 255, 0},  {255, 255, 255},    {255, 80, 0},   {0, 0, 0}};
-const char * ALL_COLOR_CLASSES[10] =    {"red",         "green",        "blue",         "pink",         "aqua",         "yellow",       "white",            "orange",       "black"};
+const RGB ALL_COLORS[10] = { { 255, 0, 0 }, { 0, 255, 0 }, { 0, 0, 255 }, {
+    255, 0, 255 }, { 0, 255, 200 }, { 255, 255, 0 }, { 255, 255, 255 }, {
+    255, 80, 0 }, { 0, 0, 0 } };
+const char * ALL_COLOR_CLASSES[10] = { "red", "green", "blue", "pink",
+    "aqua", "yellow", "white", "orange", "black" };
 
 union REGS inregs;
 union REGS outregs;
