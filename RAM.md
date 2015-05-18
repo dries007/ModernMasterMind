@@ -32,3 +32,6 @@ CMD  | Function
 0x02 | Send LCD Char Buffer
 0x03 | Send LCD Command
 0x04 | Clear & Print LCD
+0x05 | LCD cursor to LCD Command
+0x06 | LCD backlight on
+0x07 | LCD backlight off
